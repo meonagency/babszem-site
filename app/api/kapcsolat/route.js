@@ -28,7 +28,10 @@ export async function POST(req) {
   }
 
   // Honeypot: emberek nem töltik ki
-  if (clean(body.website)) return Response.json({ ok: true });
+  if (clean(body.hp_x9)) {
+    console.warn("[kapcsolat] honeypot – beküldés eldobva");
+    return Response.json({ ok: true });
+  }
 
   const interest = oneOf(body.interest, INTERESTS.map((i) => i.value));
   const isWedding = interest === WEDDING;
@@ -52,6 +55,7 @@ export async function POST(req) {
   if (!data.name) errors.name = "Kérjük, add meg a neved.";
   if (!EMAIL_RE.test(data.email)) errors.email = "Kérjük, adj meg egy érvényes e-mail címet.";
   if (!isWedding && !data.message) errors.message = "Írd le röviden, mire lenne szükséged.";
+  if (isWedding && !clean(body.budget)) errors.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet.";
   if (!data.consent) errors.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
   if (Object.keys(errors).length) {
     return Response.json({ ok: false, errors }, { status: 422 });

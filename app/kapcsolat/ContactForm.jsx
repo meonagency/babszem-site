@@ -9,7 +9,7 @@ import {
 const INITIAL = {
   interest: "",
   name: "", email: "", phone: "", event_date: "", location: "", message: "",
-  consent: false, website: "",
+  consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
   flower_type: "", colors: "", greenery: "", favorite_flowers: "", avoid_flowers: "",
   flower_category: "", decor_points: [], guest_tables: "", head_table: "",
@@ -55,6 +55,10 @@ export default function ContactForm() {
   };
 
   const next = () => {
+    if (isWedding && step === 1 && !f.budget.trim()) {
+      setErrors((p) => ({ ...p, budget: "Kérjük, adjatok meg egy hozzávetőleges keretet." }));
+      return;
+    }
     setStep((s) => Math.min(s + 1, lastStep));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -112,7 +116,7 @@ export default function ContactForm() {
     <form className="cf" onSubmit={submit} noValidate>
       {/* Honeypot */}
       <div className="hp" aria-hidden="true">
-        <label>Weboldal <input tabIndex={-1} autoComplete="off" value={f.website} onChange={set("website")} /></label>
+        <label>Ezt a mezőt hagyd üresen <input type="text" name="hp_x9" tabIndex={-1} autoComplete="new-password" data-lpignore="true" data-1p-ignore value={f.hp_x9} onChange={set("hp_x9")} /></label>
       </div>
 
       {step > 0 && (
@@ -188,7 +192,9 @@ export default function ContactForm() {
           )}
           <Field
             label="Gondolt keretösszeg"
-            hint="Nem kötelező. Az esküvői dekoráció nem sablonárakra épül; a keret abban segít, hogy ár-érték arányban a hozzátok illő ajánlatot állítsuk össze."
+            hint="Az esküvői dekoráció nem sablonárakra épül; a keret abban segít, hogy ár-érték arányban a hozzátok illő ajánlatot állítsuk össze."
+            error={errors.budget}
+            required
           >
             <input value={f.budget} onChange={set("budget")} placeholder="pl. 300 000 Ft körül" />
           </Field>
