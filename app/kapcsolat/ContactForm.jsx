@@ -309,7 +309,7 @@ export default function ContactForm() {
           )}
           <Field
             label="Gondolt keretösszeg"
-            hint="Az esküvői dekoráció nem sablonárakra épül. A keret abban segít, hogy pontosabb, a hozzátok illő ajánlatot tudjunk adni. A minimális keretösszeg 100 000 Ft."
+            hint="Az esküvői dekoráció nem sablonárakra épül. A keret abban segít, hogy pontosabb, a hozzátok illő ajánlatot tudjunk adni."
             error={errors.budget}
             required
           >
