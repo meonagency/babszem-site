@@ -117,6 +117,7 @@ export default function ContactForm() {
       if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
       if (!EMAIL_RE.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
       if (f.phone && formatPhone(f.phone) === null) e.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
+      if (!isWedding && f.location.trim().length < 2) e.location = "Kérjük, add meg a települést.";
       if (!isWedding && !f.message.trim()) e.message = "Írd le röviden, mire lenne szükséged.";
       if (f.images.length > IMAGES.max) e.images = `Legfeljebb ${IMAGES.max} képet tölthettek fel.`;
       if (f.pinterest && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(f.pinterest.trim()))
@@ -273,7 +274,7 @@ export default function ContactForm() {
           <Field label="Mikorra lenne rá szükség?" hint="Ha van konkrét dátum." error={errors.event_date}>
             <input type="date" min={todayISO()} max={todayISO(4)} value={f.event_date} onChange={set("event_date")} />
           </Field>
-          <Field label="Település" hint="Átvételhez vagy kiszállításhoz.">
+          <Field label="Település" hint="Átvételhez vagy kiszállításhoz." error={errors.location} required>
             <LocationInput kind="city" value={f.location} onChange={(v) => put("location", v)} placeholder="pl. Ráckeve" autoComplete="address-level2" />
           </Field>
           <Field label="Miben segíthetünk?" error={errors.message} required counter={`${f.message.length} / ${MSG_MAX}`}>

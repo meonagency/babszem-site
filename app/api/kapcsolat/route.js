@@ -113,6 +113,7 @@ export async function POST(req) {
   if (data.name.length < 2) errors.name = "Kérjük, add meg a neved.";
   if (!EMAIL_RE.test(data.email)) errors.email = "Kérjük, adj meg egy érvényes e-mail címet.";
   if (baseInterest === GIFT_INTEREST && !giftType) errors.gift_type = "Válaszd ki, hogy csokorról vagy virágboxról van szó.";
+  if (!isWedding && data.location.length < 2) errors.location = "Kérjük, add meg a települést.";
   if (!isWedding && !data.message) errors.message = "Írd le röviden, mire lenne szükséged.";
   if (isWedding) {
     if (data.location.length < 2) errors.location = "Kérjük, adjátok meg az esküvő helyszínét.";
