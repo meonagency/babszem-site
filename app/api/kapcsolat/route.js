@@ -117,7 +117,7 @@ export async function POST(req) {
   if (isWedding) {
     if (data.location.length < 2) errors.location = "Kérjük, adjátok meg az esküvő helyszínét.";
     if (body.church === "Igen" && clean(body.church_address, 200).length < 2) errors.church_address = "Kérjük, adjátok meg a templom helyszínét.";
-    if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "A minimális keretösszeg 100 000 Ft.";
+    if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "A minimális keretösszeg 100 000 Ft. Ennél alacsonyabb összegből nem tudunk pontos esküvői ajánlatot adni.";
     if (!inRange(digits(body.guests), ...LIMITS.guests)) errors.guests = "Ellenőrizd a létszámot.";
     if (!inRange(digits(body.guest_tables), ...LIMITS.guest_tables)) errors.guest_tables = "Ellenőrizd az asztalszámot.";
     if (!inRange(digits(body.head_table), ...LIMITS.head_table)) errors.head_table = "Ellenőrizd a főasztal létszámát.";

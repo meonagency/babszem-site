@@ -105,7 +105,7 @@ export default function ContactForm() {
       if (f.location.trim().length < 2) e.location = "Kérjük, adjátok meg az esküvő helyszínét.";
       if (f.church === "Igen" && f.church_address.trim().length < 2) e.church_address = "Kérjük, adjátok meg a templom helyszínét.";
       if (!f.budget) e.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet.";
-      else if (moneyValue(f.budget) < LIMITS.budget_min) e.budget = "A minimális keretösszeg 100 000 Ft.";
+      else if (moneyValue(f.budget) < LIMITS.budget_min) e.budget = "A minimális keretösszeg 100 000 Ft. Ennél alacsonyabb összegből nem tudunk pontos esküvői ajánlatot adni.";
     }
     if (isGift && s === 1 && !f.gift_type) e.gift_type = "Válaszd ki, hogy csokorról vagy virágboxról van szó.";
     if (isWedding && s === 3) {
@@ -309,7 +309,7 @@ export default function ContactForm() {
           )}
           <Field
             label="Gondolt keretösszeg"
-            hint="Az esküvői dekoráció nem sablonárakra épül; a keret abban segít, hogy ár-érték arányban a hozzátok illő ajánlatot állítsuk össze."
+            hint="Az esküvői dekoráció nem sablonárakra épül. A keret abban segít, hogy pontosabb, a hozzátok illő ajánlatot tudjunk adni. A minimális keretösszeg 100 000 Ft."
             error={errors.budget}
             required
           >
@@ -317,9 +317,6 @@ export default function ContactForm() {
               <input inputMode="numeric" value={f.budget} onChange={set("budget", formatMoney)} placeholder="pl. 400 000" />
             </Suffix>
           </Field>
-          {f.budget && moneyValue(f.budget) < LIMITS.budget_min && !errors.budget && (
-            <p className="cf-warn" role="status">A minimális keretösszeg 100 000 Ft. Ennél alacsonyabb összegből nem tudunk esküvői dekorációs ajánlatot adni.</p>
-          )}
         </fieldset>
       )}
 
