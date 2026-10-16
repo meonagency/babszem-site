@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import {
-  INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
+  PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
   SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
 } from "./fields";
@@ -43,9 +43,12 @@ export default function ContactForm() {
       const raw = sessionStorage.getItem(STORE_KEY);
       if (raw) {
         const saved = JSON.parse(raw);
-        if (saved?.f) setF({ ...INITIAL, ...saved.f, hp_x9: "" });
-        if (Number.isInteger(saved?.step)) setStep(saved.step);
-        if (Number.isInteger(saved?.reached)) setReached(saved.reached);
+        const ok = saved?.f && (!saved.f.interest || PUBLIC_INTERESTS.some((i) => i.value === saved.f.interest));
+        if (ok) {
+          setF({ ...INITIAL, ...saved.f, hp_x9: "" });
+          if (Number.isInteger(saved.step)) setStep(saved.step);
+          if (Number.isInteger(saved.reached)) setReached(saved.reached);
+        }
       }
     } catch {}
     loaded.current = true;
@@ -237,7 +240,7 @@ export default function ContactForm() {
         <fieldset>
           <legend>Miben segíthetünk?</legend>
           <div className="cf-cards">
-            {INTERESTS.map((i) => (
+            {PUBLIC_INTERESTS.map((i) => (
               <button type="button" key={i.value} className={`cf-card${f.interest === i.value ? " on" : ""}`} onClick={() => choose(i.value)}>
                 <strong>{i.value}</strong>
                 <span>{i.hint}</span>

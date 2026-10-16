@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import {
-  INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
+  PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
 } from "../../kapcsolat/fields";
@@ -85,7 +85,7 @@ export async function POST(req) {
     return Response.json({ ok: true });
   }
 
-  const baseInterest = oneOf(body.interest, INTERESTS.map((i) => i.value));
+  const baseInterest = oneOf(body.interest, PUBLIC_INTERESTS.map((i) => i.value));
   const isWedding = baseInterest === WEDDING;
   const giftType = baseInterest === GIFT_INTEREST ? oneOf(body.gift_type, GIFT_TYPES) : "";
   const interest = giftType ? `${GIFT_INTEREST} – ${giftType}` : baseInterest;

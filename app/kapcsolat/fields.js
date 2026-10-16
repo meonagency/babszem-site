@@ -6,11 +6,14 @@ export const GIFT_TYPES = ["Csokor", "Virágbox"];
 
 export const INTERESTS = [
   { value: "Esküvő", hint: "Virág- és esküvői dekoráció" },
-  { value: RENTAL_INTEREST, hint: "Dekorációs elemek és selyemvirágos dekoráció bérlése" },
+  // Fejlesztés alatt: addig nem jelenik meg és nem fogadjuk el (hidden: true)
+  { value: RENTAL_INTEREST, hint: "Dekorációs elemek és selyemvirágos dekoráció bérlése", hidden: true },
   { value: GIFT_INTEREST, hint: "Csokor vagy virágbox" },
   { value: "Koszorú", hint: "Ajtó-, adventi és gyászkoszorú" },
   { value: "Egyéb", hint: "Bármi más" },
 ];
+
+export const PUBLIC_INTERESTS = INTERESTS.filter((i) => !i.hidden);
 
 export const TABLE_LAYOUTS = ["Kerek asztalok", "Hosszú asztalok", "Vegyes", "Még nem tudjuk"];
 export const CHURCH = ["Igen", "Nem", "Még nem tudjuk"];
