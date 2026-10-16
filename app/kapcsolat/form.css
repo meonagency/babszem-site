@@ -103,9 +103,12 @@
 .cf-back { font: inherit; font-size: 15px; background: none; border: 0; color: var(--muted); cursor: pointer; padding: 0; }
 .cf-back:hover { color: var(--gold-deep); }
 .cf-progress ol { list-style: none; display: flex; gap: 6px; padding: 0; margin: 0; flex-wrap: wrap; }
-.cf-progress li { font-size: 13px; color: var(--muted); padding: 4px 10px; border-radius: 999px; border: 1px solid #e4d9c7; }
-.cf-progress li.on { color: #fff; background: var(--gold); border-color: var(--gold); }
-.cf-progress li.done { color: var(--gold-deep); border-color: var(--gold-light); }
+.cf-progress li button { font: inherit; font-size: 13px; color: var(--muted); background: none; padding: 4px 10px; border-radius: 999px; border: 1px solid #e4d9c7; cursor: pointer; }
+.cf-progress li button:disabled { cursor: default; opacity: 0.7; }
+.cf-progress li button:not(:disabled):hover { border-color: var(--gold); }
+.cf-progress li button.on { color: #fff; background: var(--gold); border-color: var(--gold); }
+.cf-progress li button.done { color: var(--gold-deep); border-color: var(--gold-light); }
+.cf-warn { color: #a4461f; font-size: 14px; margin: -8px 0 0; }
 
 .cf-actions { margin-top: 28px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 .cf-submit {

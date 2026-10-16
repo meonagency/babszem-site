@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import {
   INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
+  RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
 } from "../../kapcsolat/fields";
 import { docHtml, emailHtml, folderName } from "./doc";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
@@ -31,19 +32,21 @@ const url = (v) => {
 };
 
 // Dekorációs pontok csoportonként: "Szertartás: Boldogságkapu, Odavezető út | …"
-const decorList = (v) => {
+const withCount = (item, count) => (item === BRIDESMAIDS && count ? `${item} (${count} db)` : item);
+
+const decorList = (v, count) => {
   const picked = Array.isArray(v) ? v : [];
   return DECOR_GROUPS.map((g) => {
-    const items = g.items.filter((i) => picked.includes(i));
+    const items = g.items.filter((i) => picked.includes(i)).map((i) => withCount(i, count));
     return items.length ? `${g.title}: ${items.join(", ")}` : "";
   })
     .filter(Boolean)
     .join(" | ");
 };
 
-const decorGroups = (v) => {
+const decorGroups = (v, count) => {
   const picked = Array.isArray(v) ? v : [];
-  return DECOR_GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => picked.includes(i)) })).filter(
+  return DECOR_GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => picked.includes(i)).map((i) => withCount(i, count)) })).filter(
     (g) => g.items.length
   );
 };
@@ -82,8 +85,20 @@ export async function POST(req) {
     return Response.json({ ok: true });
   }
 
-  const interest = oneOf(body.interest, INTERESTS.map((i) => i.value));
-  const isWedding = interest === WEDDING;
+  const baseInterest = oneOf(body.interest, INTERESTS.map((i) => i.value));
+  const isWedding = baseInterest === WEDDING;
+  const giftType = baseInterest === GIFT_INTEREST ? oneOf(body.gift_type, GIFT_TYPES) : "";
+  const interest = giftType ? `${GIFT_INTEREST} – ${giftType}` : baseInterest;
+
+  // Eszközbérlésnél a selyem/bérlés válasz az üzenet végére kerül (a nem esküvői ágon nincs rá külön oszlop)
+  let message = cleanLong(body.message);
+  if (baseInterest === RENTAL_INTEREST) {
+    const extra = [
+      oneOf(body.silk_rental, SILK) && `Bérelhető selyemvirágos dekoráció: ${oneOf(body.silk_rental, SILK)}`,
+      oneOf(body.rental, RENTAL) && `Bérelnének dekorációs elemeket: ${oneOf(body.rental, RENTAL)}`,
+    ].filter(Boolean);
+    if (extra.length) message = `${message}\n\n${extra.join("\n")}`.trim();
+  }
 
   const data = {
     interest,
@@ -92,7 +107,7 @@ export async function POST(req) {
     phone: clean(body.phone, 40) ? formatPhone(clean(body.phone, 40)) : "",
     event_date: clean(body.event_date, 10),
     location: clean(body.location, 200),
-    message: cleanLong(body.message),
+    message,
     consent: body.consent === true,
     page: clean(body.page, 200),
     utm_source: clean(body.utm_source, 100),
@@ -105,9 +120,12 @@ export async function POST(req) {
   if (!validFutureDate(data.event_date)) errors.event_date = "Válassz mai vagy későbbi dátumot.";
   if (data.name.length < 2) errors.name = "Kérjük, add meg a neved.";
   if (!EMAIL_RE.test(data.email)) errors.email = "Kérjük, adj meg egy érvényes e-mail címet.";
+  if (baseInterest === GIFT_INTEREST && !giftType) errors.gift_type = "Válaszd ki, hogy csokorról vagy virágboxról van szó.";
   if (!isWedding && !data.message) errors.message = "Írd le röviden, mire lenne szükséged.";
   if (isWedding) {
-    if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet forintban.";
+    if (data.location.length < 2) errors.location = "Kérjük, adjátok meg az esküvő helyszínét.";
+    if (body.church === "Igen" && clean(body.church_address, 200).length < 2) errors.church_address = "Kérjük, adjátok meg a templom helyszínét.";
+    if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "A minimális keretösszeg 100 000 Ft.";
     if (!inRange(digits(body.guests), ...LIMITS.guests)) errors.guests = "Ellenőrizd a létszámot.";
     if (!inRange(digits(body.guest_tables), ...LIMITS.guest_tables)) errors.guest_tables = "Ellenőrizd az asztalszámot.";
     if (!inRange(digits(body.head_table), ...LIMITS.head_table)) errors.head_table = "Ellenőrizd a főasztal létszámát.";
@@ -126,18 +144,16 @@ export async function POST(req) {
         church: oneOf(body.church, CHURCH),
         church_address: body.church === "Igen" ? clean(body.church_address, 200) : "",
         budget: `${formatMoney(body.budget)} Ft`,
-        silk_rental: oneOf(body.silk_rental, SILK),
         colors: tagList(body.colors, 200),
         greenery: oneOf(body.greenery, GREENERY),
         premium_flowers:
           body.flower_category === SEASONAL ? "" : manyOf(body.premium_flowers, PREMIUM_FLOWERS),
         avoid_flowers: clean(body.avoid_flowers, 200),
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
-        decor_points: decorList(body.decor_points),
-        decor_groups: decorGroups(body.decor_points),
+        decor_points: decorList(body.decor_points, digits(body.bridesmaids)),
+        decor_groups: decorGroups(body.decor_points, digits(body.bridesmaids)),
         guest_tables: digits(body.guest_tables),
         head_table: digits(body.head_table),
-        rental: oneOf(body.rental, RENTAL),
         delivery: "Helyszíni dekorálás + bontás",
         gifts: manyOf(body.gifts, GIFTS),
         pinterest: url(body.pinterest),

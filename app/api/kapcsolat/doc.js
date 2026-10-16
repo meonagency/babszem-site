@@ -90,7 +90,6 @@ ${table([
   ["Színvilág", d.colors],
   ["Zöld levelek", d.greenery],
   ["Kerülendő virágok", d.avoid_flowers],
-  ["Bérelhető selyem dekoráció", d.silk_rental],
 ])}
 
 ${h2("Dekoráció")}
@@ -99,7 +98,6 @@ ${decor}
 ${table([
   ["Vendégasztalok száma", d.guest_tables ? `${d.guest_tables} db` : ""],
   ["Főasztal létszáma", d.head_table ? `${d.head_table} fő` : ""],
-  ["Dekorelem bérlés", d.rental],
   ["Helyszíni munka", d.delivery],
   ["Köszönőajándék", d.gifts],
 ])}

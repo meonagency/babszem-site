@@ -89,5 +89,5 @@ export const LIMITS = {
   guests: [1, 1000],
   guest_tables: [1, 200],
   head_table: [1, 80],
-  budget_min: 10000,
+  budget_min: 100000,
 };
