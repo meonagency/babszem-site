@@ -1,0 +1,99 @@
+:root {
+  --gold: #cb8629;
+  --gold-mid: #d9a35b;
+  --gold-light: #e6c28f;
+  --gold-deep: #a86d1f;
+  --cream: #faf6ef;
+  --ink: #3a2c1e;
+  --muted: #7a6a58;
+  --font-display: "Cinzel Variable", Georgia, serif;
+  --font-body: "Jost Variable", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 350;
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.wrap {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 64px 16px 28px;
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  max-width: 560px;
+  gap: 22px;
+}
+
+/* Álló logó – arányok a logó v1-ből (1em = BABSZEM betűméret) */
+.logo-stacked {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--gold);
+  font-size: clamp(34px, 11vw, 60px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+.logo-mark { width: 1.084em; height: 1.567em; margin-bottom: 0.165em; }
+.logo-l1 { letter-spacing: 0.0549em; margin-right: -0.0549em; }
+.logo-l2 {
+  font-size: 0.6065em;
+  letter-spacing: 0.038em;
+  margin-right: -0.038em;
+  margin-top: 0.129em;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  color: var(--gold-deep);
+  margin-top: 18px;
+}
+
+.lead { color: var(--muted); }
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  font-weight: 400;
+}
+
+a {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--gold) 50%, transparent);
+  padding-bottom: 1px;
+}
+a:hover { border-bottom-color: var(--gold); color: var(--gold-deep); }
+
+.foot { font-size: 13px; color: var(--muted); margin-top: 48px; }
+.foot a { color: var(--muted); }
