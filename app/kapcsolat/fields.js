@@ -44,4 +44,15 @@ export const DECOR_POINTS = [
   "Lógatott díszek",
 ];
 
+export const COLORS = [
+  "fehér", "ekrü", "púder", "rózsaszín", "barack", "terrakotta", "bordó",
+  "levendula", "lila", "kék", "zsálya", "zöld", "sárga", "arany", "pasztell", "színes",
+];
+
+export const FLOWERS = [
+  "rózsa", "peónia", "hortenzia", "szegfű", "dália", "gipszvirág", "eukaliptusz",
+  "tulipán", "liliom", "orchidea", "szarkaláb", "boglárka", "szellőrózsa",
+  "levendula", "napraforgó", "rezgő", "pampafű",
+];
+
 export const WEDDING = "Esküvő";

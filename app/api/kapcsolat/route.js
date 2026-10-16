@@ -3,8 +3,18 @@ import {
   INTERESTS, TABLE_LAYOUTS, CHURCH, FLOWER_TYPES, GREENERY, FLOWER_CATEGORIES,
   RENTAL, DELIVERY, GIFTS, DECOR_POINTS, WEDDING,
 } from "../../kapcsolat/fields";
+import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+// Tömb vagy vesszős szöveg → "a, b, c" (szabad bevitel is megengedett, rövidítve)
+const tagList = (v, max = 300) => {
+  const arr = Array.isArray(v) ? v : typeof v === "string" ? v.split(",") : [];
+  return arr
+    .map((x) => (typeof x === "string" ? x.replace(/\s+/g, " ").trim().slice(0, 40) : ""))
+    .filter(Boolean)
+    .slice(0, 20)
+    .join(", ")
+    .slice(0, max);
+};
 
 const clean = (v, max = 300) =>
   typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, max) : "";
@@ -40,8 +50,8 @@ export async function POST(req) {
     interest,
     name: clean(body.name, 120),
     email: clean(body.email, 160).toLowerCase(),
-    phone: clean(body.phone, 40),
-    event_date: clean(body.event_date, 20),
+    phone: clean(body.phone, 40) ? formatPhone(clean(body.phone, 40)) : "",
+    event_date: clean(body.event_date, 10),
     location: clean(body.location, 200),
     message: cleanLong(body.message),
     consent: body.consent === true,
@@ -52,10 +62,17 @@ export async function POST(req) {
 
   const errors = {};
   if (!interest) errors.interest = "Válaszd ki, miben segíthetünk.";
-  if (!data.name) errors.name = "Kérjük, add meg a neved.";
+  if (data.phone === null) errors.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
+  if (!validFutureDate(data.event_date)) errors.event_date = "Válassz mai vagy későbbi dátumot.";
+  if (data.name.length < 2) errors.name = "Kérjük, add meg a neved.";
   if (!EMAIL_RE.test(data.email)) errors.email = "Kérjük, adj meg egy érvényes e-mail címet.";
   if (!isWedding && !data.message) errors.message = "Írd le röviden, mire lenne szükséged.";
-  if (isWedding && !clean(body.budget)) errors.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet.";
+  if (isWedding) {
+    if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet forintban.";
+    if (!inRange(digits(body.guests), ...LIMITS.guests)) errors.guests = "Ellenőrizd a létszámot.";
+    if (!inRange(digits(body.guest_tables), ...LIMITS.guest_tables)) errors.guest_tables = "Ellenőrizd az asztalszámot.";
+    if (!inRange(digits(body.head_table), ...LIMITS.head_table)) errors.head_table = "Ellenőrizd a főasztal létszámát.";
+  }
   if (!data.consent) errors.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
   if (Object.keys(errors).length) {
     return Response.json({ ok: false, errors }, { status: 422 });
@@ -67,12 +84,12 @@ export async function POST(req) {
         table_layout: oneOf(body.table_layout, TABLE_LAYOUTS),
         church: oneOf(body.church, CHURCH),
         church_address: body.church === "Igen" ? clean(body.church_address, 200) : "",
-        budget: clean(body.budget, 60),
+        budget: `${formatMoney(body.budget)} Ft`,
         flower_type: oneOf(body.flower_type, FLOWER_TYPES),
-        colors: clean(body.colors, 200),
+        colors: tagList(body.colors, 200),
         greenery: oneOf(body.greenery, GREENERY),
-        favorite_flowers: clean(body.favorite_flowers, 300),
-        avoid_flowers: clean(body.avoid_flowers, 300),
+        favorite_flowers: tagList(body.favorite_flowers),
+        avoid_flowers: tagList(body.avoid_flowers),
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
         decor_points: manyOf(body.decor_points, DECOR_POINTS),
         guest_tables: digits(body.guest_tables),

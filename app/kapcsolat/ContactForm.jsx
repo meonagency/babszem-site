@@ -3,40 +3,49 @@
 import { useState } from "react";
 import {
   INTERESTS, TABLE_LAYOUTS, CHURCH, FLOWER_TYPES, GREENERY, FLOWER_CATEGORIES,
-  RENTAL, DELIVERY, GIFTS, DECOR_POINTS, WEDDING,
+  RENTAL, DELIVERY, GIFTS, DECOR_POINTS, COLORS, FLOWERS, WEDDING,
 } from "./fields";
+import {
+  formatPhone, formatMoney, moneyValue, emailSuggestion, EMAIL_RE,
+  validFutureDate, todayISO, inRange, LIMITS,
+} from "./format";
+import { LocationInput, TagPicker } from "./inputs";
 
 const INITIAL = {
   interest: "",
   name: "", email: "", phone: "", event_date: "", location: "", message: "",
   consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
-  flower_type: "", colors: "", greenery: "", favorite_flowers: "", avoid_flowers: "",
+  flower_type: "", colors: [], greenery: "", favorite_flowers: [], avoid_flowers: [],
   flower_category: "", decor_points: [], guest_tables: "", head_table: "",
   rental: "", delivery: "", gifts: [], pinterest: "",
 };
 
 const WEDDING_STEPS = ["Alapok", "Virágok", "Dekoráció", "Elérhetőség"];
+const MSG_MAX = 2000;
+const onlyDigits = (v, max = 4) => v.replace(/\D/g, "").slice(0, max);
 
 export default function ContactForm() {
   const [f, setF] = useState(INITIAL);
-  const [step, setStep] = useState(0); // 0 = érdeklődés választása
+  const [step, setStep] = useState(0);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState("idle"); // idle | sending | done | error
+  const [status, setStatus] = useState("idle");
   const [serverError, setServerError] = useState("");
 
   const isWedding = f.interest === WEDDING;
   const steps = isWedding ? WEDDING_STEPS : ["Részletek"];
   const lastStep = steps.length;
 
-  const set = (k) => (e) => {
-    const v = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+  const put = (k, v) => {
     setF((p) => ({ ...p, [k]: v }));
     if (errors[k]) setErrors((p) => ({ ...p, [k]: undefined }));
   };
-  const pick = (k, v) => setF((p) => ({ ...p, [k]: p[k] === v ? "" : v }));
-  const toggle = (k, v) =>
-    setF((p) => ({ ...p, [k]: p[k].includes(v) ? p[k].filter((x) => x !== v) : [...p[k], v] }));
+  const set = (k, transform) => (e) => {
+    const raw = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+    put(k, transform ? transform(raw) : raw);
+  };
+  const pick = (k, v) => put(k, f[k] === v ? "" : v);
+  const toggle = (k, v) => put(k, f[k].includes(v) ? f[k].filter((x) => x !== v) : [...f[k], v]);
 
   const choose = (v) => {
     setF((p) => ({ ...p, interest: v }));
@@ -44,33 +53,49 @@ export default function ContactForm() {
     setErrors({});
   };
 
-  const validateContact = () => {
+  // ---- Lépésenkénti ellenőrzés ----
+  const validate = (s) => {
     const e = {};
-    if (!f.name.trim()) e.name = "Kérjük, add meg a neved.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
-    if (!isWedding && !f.message.trim()) e.message = "Írd le röviden, mire lenne szükséged.";
-    if (!f.consent) e.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
+    const contactStep = isWedding ? 4 : 1;
+    if (s === 1) {
+      if (!validFutureDate(f.event_date)) e.event_date = "Válassz mai vagy későbbi dátumot.";
+    }
+    if (isWedding && s === 1) {
+      if (!f.event_date) e.event_date = "Kérjük, adjátok meg az esküvő dátumát.";
+      if (!inRange(f.guests, ...LIMITS.guests)) e.guests = `1 és ${LIMITS.guests[1]} közötti számot adj meg.`;
+      if (!f.budget) e.budget = "Kérjük, adjatok meg egy hozzávetőleges keretet.";
+      else if (moneyValue(f.budget) < LIMITS.budget_min) e.budget = "A keretet forintban, teljes összegként adjátok meg (pl. 400 000).";
+    }
+    if (isWedding && s === 3) {
+      if (!inRange(f.guest_tables, ...LIMITS.guest_tables)) e.guest_tables = "Adj meg egy valós asztalszámot.";
+      if (!inRange(f.head_table, ...LIMITS.head_table)) e.head_table = "Adj meg egy valós létszámot.";
+    }
+    if (s === contactStep) {
+      if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
+      if (!EMAIL_RE.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
+      if (f.phone && formatPhone(f.phone) === null) e.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
+      if (!isWedding && !f.message.trim()) e.message = "Írd le röviden, mire lenne szükséged.";
+      if (f.pinterest && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(f.pinterest.trim()))
+        e.pinterest = "Ez nem tűnik linknek. Másold be a teljes címet.";
+      if (!f.consent) e.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
+    }
     setErrors(e);
-    return Object.keys(e).length === 0;
+    if (Object.keys(e).length) {
+      requestAnimationFrame(() => document.querySelector(".cf-field.err, .cf-consent.err")?.scrollIntoView({ behavior: "smooth", block: "center" }));
+      return false;
+    }
+    return true;
   };
 
-  const next = () => {
-    if (isWedding && step === 1 && !f.budget.trim()) {
-      setErrors((p) => ({ ...p, budget: "Kérjük, adjatok meg egy hozzávetőleges keretet." }));
-      return;
-    }
-    setStep((s) => Math.min(s + 1, lastStep));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-  const back = () => {
-    setStep((s) => Math.max(s - 1, 0));
+  const go = (to) => {
+    setStep(to);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const submit = async (e) => {
     e.preventDefault();
-    if (step < lastStep) return next();
-    if (!validateContact()) return;
+    if (!validate(step)) return;
+    if (step < lastStep) return go(step + 1);
     setStatus("sending");
     setServerError("");
     const qs = new URLSearchParams(window.location.search);
@@ -80,6 +105,8 @@ export default function ContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...f,
+          phone: f.phone ? formatPhone(f.phone) : "",
+          budget: f.budget ? `${f.budget} Ft` : "",
           page: window.location.pathname,
           utm_source: qs.get("utm_source") || "",
           utm_campaign: qs.get("utm_campaign") || "",
@@ -92,7 +119,7 @@ export default function ContactForm() {
         return;
       }
       if (data.errors) setErrors(data.errors);
-      setServerError(data.error || "Valami hiba történt. Ellenőrizd a mezőket.");
+      setServerError(data.error || "Valami nem stimmel. Ellenőrizd a megjelölt mezőket.");
       setStatus("error");
     } catch {
       setServerError("Nem sikerült elküldeni. Próbáld újra, vagy írj nekünk e-mailben.");
@@ -112,16 +139,17 @@ export default function ContactForm() {
     );
   }
 
+  const suggestion = emailSuggestion(f.email);
+
   return (
     <form className="cf" onSubmit={submit} noValidate>
-      {/* Honeypot */}
       <div className="hp" aria-hidden="true">
         <label>Ezt a mezőt hagyd üresen <input type="text" name="hp_x9" tabIndex={-1} autoComplete="new-password" data-lpignore="true" data-1p-ignore value={f.hp_x9} onChange={set("hp_x9")} /></label>
       </div>
 
       {step > 0 && (
         <div className="cf-progress">
-          <button type="button" className="cf-back" onClick={back}>← Vissza</button>
+          <button type="button" className="cf-back" onClick={() => go(step - 1)}>← Vissza</button>
           {steps.length > 1 && (
             <ol>
               {steps.map((s, i) => (
@@ -137,12 +165,7 @@ export default function ContactForm() {
           <legend>Miben segíthetünk?</legend>
           <div className="cf-cards">
             {INTERESTS.map((i) => (
-              <button
-                type="button"
-                key={i.value}
-                className={`cf-card${f.interest === i.value ? " on" : ""}`}
-                onClick={() => choose(i.value)}
-              >
+              <button type="button" key={i.value} className={`cf-card${f.interest === i.value ? " on" : ""}`} onClick={() => choose(i.value)}>
                 <strong>{i.value}</strong>
                 <span>{i.hint}</span>
               </button>
@@ -151,43 +174,45 @@ export default function ContactForm() {
         </fieldset>
       )}
 
-      {/* ---------- Nem esküvő: egy lépés ---------- */}
+      {/* ---------- Nem esküvő ---------- */}
       {step === 1 && !isWedding && (
         <fieldset>
           <legend>{f.interest}</legend>
-          <Field label="Mikorra lenne rá szükség?" hint="Ha van konkrét dátum.">
-            <input type="date" value={f.event_date} onChange={set("event_date")} />
+          <Field label="Mikorra lenne rá szükség?" hint="Ha van konkrét dátum." error={errors.event_date}>
+            <input type="date" min={todayISO()} max={todayISO(4)} value={f.event_date} onChange={set("event_date")} />
           </Field>
           <Field label="Település" hint="Átvételhez vagy kiszállításhoz.">
-            <input value={f.location} onChange={set("location")} autoComplete="address-level2" />
+            <LocationInput kind="city" value={f.location} onChange={(v) => put("location", v)} placeholder="pl. Ráckeve" autoComplete="address-level2" />
           </Field>
-          <Field label="Miben segíthetünk?" error={errors.message} required>
-            <textarea rows={5} value={f.message} onChange={set("message")} />
+          <Field label="Miben segíthetünk?" error={errors.message} required counter={`${f.message.length} / ${MSG_MAX}`}>
+            <textarea rows={5} maxLength={MSG_MAX} value={f.message} onChange={set("message")} />
           </Field>
-          <Contact f={f} set={set} errors={errors} />
+          <Contact f={f} set={set} put={put} errors={errors} suggestion={suggestion} />
         </fieldset>
       )}
 
-      {/* ---------- Esküvő: 1. Alapok ---------- */}
+      {/* ---------- Esküvő 1: Alapok ---------- */}
       {step === 1 && isWedding && (
         <fieldset>
           <legend>Az esküvőtök</legend>
           <div className="cf-row">
-            <Field label="Időpont">
-              <input type="date" value={f.event_date} onChange={set("event_date")} />
+            <Field label="Időpont" error={errors.event_date} required>
+              <input type="date" min={todayISO()} max={todayISO(4)} value={f.event_date} onChange={set("event_date")} />
             </Field>
-            <Field label="Létszám" hint="Kb. hány vendég?">
-              <input inputMode="numeric" value={f.guests} onChange={set("guests")} />
+            <Field label="Létszám" hint="Kb. hány vendég?" error={errors.guests}>
+              <Suffix unit="fő">
+                <input inputMode="numeric" value={f.guests} onChange={set("guests", (v) => onlyDigits(v))} placeholder="pl. 80" />
+              </Suffix>
             </Field>
           </div>
-          <Field label="Helyszín" hint="Település és a helyszín neve.">
-            <input value={f.location} onChange={set("location")} />
+          <Field label="Helyszín" hint="Kezdd el gépelni a helyszín vagy a település nevét.">
+            <LocationInput kind="venue" value={f.location} onChange={(v) => put("location", v)} placeholder="pl. Savoyai-kastély, Ráckeve" />
           </Field>
           <Choice label="Asztalok elrendezése" options={TABLE_LAYOUTS} value={f.table_layout} onPick={(v) => pick("table_layout", v)} />
           <Choice label="Lesz templomi esküvő?" options={CHURCH} value={f.church} onPick={(v) => pick("church", v)} />
           {f.church === "Igen" && (
-            <Field label="A templom címe">
-              <input value={f.church_address} onChange={set("church_address")} />
+            <Field label="A templom">
+              <LocationInput kind="venue" value={f.church_address} onChange={(v) => put("church_address", v)} placeholder="pl. Szent Mihály-templom, Ráckeve" />
             </Field>
           )}
           <Field
@@ -196,12 +221,14 @@ export default function ContactForm() {
             error={errors.budget}
             required
           >
-            <input value={f.budget} onChange={set("budget")} placeholder="pl. 300 000 Ft körül" />
+            <Suffix unit="Ft">
+              <input inputMode="numeric" value={f.budget} onChange={set("budget", formatMoney)} placeholder="pl. 400 000" />
+            </Suffix>
           </Field>
         </fieldset>
       )}
 
-      {/* ---------- Esküvő: 2. Virágok ---------- */}
+      {/* ---------- Esküvő 2: Virágok ---------- */}
       {step === 2 && isWedding && (
         <fieldset>
           <legend>Virágok és színek</legend>
@@ -210,17 +237,20 @@ export default function ContactForm() {
             hint="Főként élő és száraz virággal dolgozunk, kérésre minőségi selyemvirággal is."
             options={FLOWER_TYPES} value={f.flower_type} onPick={(v) => pick("flower_type", v)}
           />
-          <Field label="Színvilág" hint="pl. púder, ekrü, zsálya">
-            <input value={f.colors} onChange={set("colors")} />
-          </Field>
+          <div className="cf-field">
+            <span className="cf-label">Színvilág</span>
+            <span className="cf-hint">Válasszatok egyet vagy többet, vagy írjátok be a sajátotokat.</span>
+            <TagPicker options={COLORS} value={f.colors} onChange={(v) => put("colors", v)} placeholder="Egyéb szín, pl. mustár" />
+          </div>
           <Choice label="Legyenek zöld levelek is a díszekben?" options={GREENERY} value={f.greenery} onPick={(v) => pick("greenery", v)} />
-          <div className="cf-row">
-            <Field label="Kedvenc virágok">
-              <input value={f.favorite_flowers} onChange={set("favorite_flowers")} placeholder="pl. rózsa, hortenzia" />
-            </Field>
-            <Field label="Kerülendő virágok">
-              <input value={f.avoid_flowers} onChange={set("avoid_flowers")} />
-            </Field>
+          <div className="cf-field">
+            <span className="cf-label">Kedvenc virágok</span>
+            <TagPicker options={FLOWERS} value={f.favorite_flowers} onChange={(v) => put("favorite_flowers", v)} placeholder="Egyéb virág" />
+          </div>
+          <div className="cf-field">
+            <span className="cf-label">Kerülendő virágok</span>
+            <span className="cf-hint">Pl. allergia vagy illat miatt.</span>
+            <TagPicker options={FLOWERS} value={f.avoid_flowers} onChange={(v) => put("avoid_flowers", v)} placeholder="Egyéb virág" />
           </div>
           <Choice
             label="Általános vagy prémium virágok?"
@@ -230,7 +260,7 @@ export default function ContactForm() {
         </fieldset>
       )}
 
-      {/* ---------- Esküvő: 3. Dekoráció ---------- */}
+      {/* ---------- Esküvő 3: Dekoráció ---------- */}
       {step === 3 && isWedding && (
         <fieldset>
           <legend>Mit díszítsünk?</legend>
@@ -246,13 +276,17 @@ export default function ContactForm() {
           {(f.decor_points.includes("Vendégasztalok") || f.decor_points.includes("Főasztal")) && (
             <div className="cf-row">
               {f.decor_points.includes("Vendégasztalok") && (
-                <Field label="Hány vendégasztal lesz?">
-                  <input inputMode="numeric" value={f.guest_tables} onChange={set("guest_tables")} />
+                <Field label="Hány vendégasztal lesz?" error={errors.guest_tables}>
+                  <Suffix unit="db">
+                    <input inputMode="numeric" value={f.guest_tables} onChange={set("guest_tables", (v) => onlyDigits(v, 3))} />
+                  </Suffix>
                 </Field>
               )}
               {f.decor_points.includes("Főasztal") && (
-                <Field label="Hány fős a főasztal?">
-                  <input inputMode="numeric" value={f.head_table} onChange={set("head_table")} />
+                <Field label="Hány fős a főasztal?" error={errors.head_table}>
+                  <Suffix unit="fő">
+                    <input inputMode="numeric" value={f.head_table} onChange={set("head_table", (v) => onlyDigits(v, 2))} />
+                  </Suffix>
                 </Field>
               )}
             </div>
@@ -273,17 +307,17 @@ export default function ContactForm() {
         </fieldset>
       )}
 
-      {/* ---------- Esküvő: 4. Elérhetőség ---------- */}
+      {/* ---------- Esküvő 4: Elérhetőség ---------- */}
       {step === 4 && isWedding && (
         <fieldset>
           <legend>Hol érünk el titeket?</legend>
-          <Field label="Pinterest tábla vagy inspiráció" hint="Ha gyűjtöttetek képeket, másoljátok be a linket.">
-            <input type="url" value={f.pinterest} onChange={set("pinterest")} placeholder="https://pinterest.com/..." />
+          <Field label="Pinterest tábla vagy inspiráció" hint="Ha gyűjtöttetek képeket, másoljátok be a linket." error={errors.pinterest}>
+            <input type="url" inputMode="url" value={f.pinterest} onChange={set("pinterest")} placeholder="https://pinterest.com/..." />
           </Field>
-          <Field label="Üzenet" hint="Bármi, amit még fontosnak tartotok.">
-            <textarea rows={4} value={f.message} onChange={set("message")} />
+          <Field label="Üzenet" hint="Bármi, amit még fontosnak tartotok." counter={`${f.message.length} / ${MSG_MAX}`}>
+            <textarea rows={4} maxLength={MSG_MAX} value={f.message} onChange={set("message")} />
           </Field>
-          <Contact f={f} set={set} errors={errors} wedding />
+          <Contact f={f} set={set} put={put} errors={errors} suggestion={suggestion} wedding />
         </fieldset>
       )}
 
@@ -299,18 +333,27 @@ export default function ContactForm() {
   );
 }
 
-function Contact({ f, set, errors, wedding }) {
+function Contact({ f, set, put, errors, suggestion, wedding }) {
   return (
     <>
       <Field label={wedding ? "Nevetek" : "Neved"} error={errors.name} required>
-        <input value={f.name} onChange={set("name")} autoComplete="name" />
+        <input value={f.name} onChange={set("name")} autoComplete="name" maxLength={120} />
       </Field>
       <div className="cf-row">
         <Field label="E-mail" error={errors.email} required>
-          <input type="email" value={f.email} onChange={set("email")} autoComplete="email" />
+          <input type="email" inputMode="email" value={f.email} onChange={set("email", (v) => v.trim())} autoComplete="email" maxLength={160} />
+          {suggestion && !errors.email && (
+            <button type="button" className="cf-suggest" onClick={() => put("email", suggestion)}>
+              Erre gondoltál: <strong>{suggestion}</strong>?
+            </button>
+          )}
         </Field>
-        <Field label="Telefon">
-          <input type="tel" value={f.phone} onChange={set("phone")} autoComplete="tel" />
+        <Field label="Telefon" hint="pl. +36 30 123 4567" error={errors.phone}>
+          <input
+            type="tel" inputMode="tel" autoComplete="tel" value={f.phone} maxLength={20}
+            onChange={set("phone", (v) => v.replace(/[^\d+\s()-]/g, ""))}
+            onBlur={() => { const p = formatPhone(f.phone); if (p) put("phone", p); }}
+          />
         </Field>
       </div>
       <label className={`cf-consent${errors.consent ? " err" : ""}`}>
@@ -325,17 +368,29 @@ function Contact({ f, set, errors, wedding }) {
   );
 }
 
-function Field({ label, hint, error, required, children }) {
+function Field({ label, hint, error, required, counter, children }) {
   return (
-    <label className={`cf-field${error ? " err" : ""}`}>
-      <span className="cf-label">
-        {label}
-        {required && <em aria-hidden="true"> *</em>}
-      </span>
-      {hint && <span className="cf-hint">{hint}</span>}
+    <div className={`cf-field${error ? " err" : ""}`}>
+      <label className="cf-labelwrap">
+        <span className="cf-label">
+          {label}
+          {required && <em aria-hidden="true"> *</em>}
+          {counter && <small className="cf-counter">{counter}</small>}
+        </span>
+        {hint && <span className="cf-hint">{hint}</span>}
+        {children}
+      </label>
+      {error && <span className="cf-error" role="alert">{error}</span>}
+    </div>
+  );
+}
+
+function Suffix({ unit, children }) {
+  return (
+    <span className="cf-suffix">
       {children}
-      {error && <span className="cf-error">{error}</span>}
-    </label>
+      <span aria-hidden="true">{unit}</span>
+    </span>
   );
 }
 
@@ -346,14 +401,7 @@ function Choice({ label, hint, options, value, onPick, stacked }) {
       {hint && <span className="cf-hint">{hint}</span>}
       <div className={`cf-chips${stacked ? " stacked" : ""}`} role="radiogroup" aria-label={label}>
         {options.map((o) => (
-          <button
-            type="button"
-            key={o}
-            role="radio"
-            aria-checked={value === o}
-            className={`cf-chip${value === o ? " on" : ""}`}
-            onClick={() => onPick(o)}
-          >
+          <button type="button" key={o} role="radio" aria-checked={value === o} className={`cf-chip${value === o ? " on" : ""}`} onClick={() => onPick(o)}>
             {o}
           </button>
         ))}
