@@ -3,6 +3,7 @@ import {
   INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
 } from "../../kapcsolat/fields";
+import { docHtml, emailHtml, folderName } from "./doc";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
 
 // Tömb vagy vesszős szöveg → "a, b, c" (szabad bevitel is megengedett, rövidítve)
@@ -38,6 +39,13 @@ const decorList = (v) => {
   })
     .filter(Boolean)
     .join(" | ");
+};
+
+const decorGroups = (v) => {
+  const picked = Array.isArray(v) ? v : [];
+  return DECOR_GROUPS.map((g) => ({ title: g.title, items: g.items.filter((i) => picked.includes(i)) })).filter(
+    (g) => g.items.length
+  );
 };
 
 // Képek: legfeljebb 5 db base64 JPEG/PNG/WebP, méretkorláttal
@@ -126,6 +134,7 @@ export async function POST(req) {
         avoid_flowers: clean(body.avoid_flowers, 200),
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
         decor_points: decorList(body.decor_points),
+        decor_groups: decorGroups(body.decor_points),
         guest_tables: digits(body.guest_tables),
         head_table: digits(body.head_table),
         rental: oneOf(body.rental, RENTAL),
@@ -147,6 +156,7 @@ export async function POST(req) {
     );
   }
 
+  const { decor_groups, ...weddingFields } = wedding;
   const payload = {
     event: "contact",
     token,
@@ -155,8 +165,13 @@ export async function POST(req) {
     ...data,
     image_count: 0,
     images: [],
-    ...wedding,
+    ...weddingFields,
   };
+  if (isWedding) {
+    payload.folder_name = folderName(payload);
+    payload.doc_html = docHtml(payload, decor_groups);
+    payload.email_html = emailHtml(payload);
+  }
 
   try {
     const res = await fetch(webhook, {
