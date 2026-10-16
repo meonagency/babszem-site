@@ -90,15 +90,7 @@ export async function POST(req) {
   const giftType = baseInterest === GIFT_INTEREST ? oneOf(body.gift_type, GIFT_TYPES) : "";
   const interest = giftType ? `${GIFT_INTEREST} – ${giftType}` : baseInterest;
 
-  // Eszközbérlésnél a selyem/bérlés válasz az üzenet végére kerül (a nem esküvői ágon nincs rá külön oszlop)
-  let message = cleanLong(body.message);
-  if (baseInterest === RENTAL_INTEREST) {
-    const extra = [
-      oneOf(body.silk_rental, SILK) && `Bérelhető selyemvirágos dekoráció: ${oneOf(body.silk_rental, SILK)}`,
-      oneOf(body.rental, RENTAL) && `Bérelnének dekorációs elemeket: ${oneOf(body.rental, RENTAL)}`,
-    ].filter(Boolean);
-    if (extra.length) message = `${message}\n\n${extra.join("\n")}`.trim();
-  }
+  const message = cleanLong(body.message);
 
   const data = {
     interest,
@@ -173,6 +165,11 @@ export async function POST(req) {
   }
 
   const { decor_groups, ...weddingFields } = wedding;
+  // Eszközbérlésnél két külön mező: a napló U és AD oszlopába kerül
+  if (baseInterest === RENTAL_INTEREST) {
+    weddingFields.silk_rental = oneOf(body.silk_rental, SILK);
+    weddingFields.rental = oneOf(body.rental, RENTAL);
+  }
   const payload = {
     event: "contact",
     token,
