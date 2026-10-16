@@ -2,23 +2,23 @@
 
 import { useState } from "react";
 import {
-  INTERESTS, TABLE_LAYOUTS, CHURCH, FLOWER_TYPES, GREENERY, FLOWER_CATEGORIES,
-  RENTAL, DELIVERY, GIFTS, DECOR_POINTS, COLORS, FLOWERS, WEDDING,
+  INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
+  SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
 } from "./fields";
 import {
   formatPhone, formatMoney, moneyValue, emailSuggestion, EMAIL_RE,
   validFutureDate, todayISO, inRange, LIMITS,
 } from "./format";
-import { LocationInput, TagPicker } from "./inputs";
+import { LocationInput, TagPicker, ImageUpload } from "./inputs";
 
 const INITIAL = {
   interest: "",
   name: "", email: "", phone: "", event_date: "", location: "", message: "",
   consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
-  flower_type: "", colors: [], greenery: "", favorite_flowers: [], avoid_flowers: [],
-  flower_category: "", decor_points: [], guest_tables: "", head_table: "",
-  rental: "", delivery: "", gifts: [], pinterest: "",
+  flower_category: "", premium_flowers: [], silk_rental: "", colors: [], greenery: "",
+  avoid_flowers: "", decor_points: [], guest_tables: "", head_table: "",
+  rental: "", gifts: [], pinterest: "", images: [],
 };
 
 const WEDDING_STEPS = ["Alapok", "Virágok", "Dekoráció", "Elérhetőség"];
@@ -75,6 +75,7 @@ export default function ContactForm() {
       if (!EMAIL_RE.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
       if (f.phone && formatPhone(f.phone) === null) e.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
       if (!isWedding && !f.message.trim()) e.message = "Írd le röviden, mire lenne szükséged.";
+      if (f.images.length > IMAGES.max) e.images = `Legfeljebb ${IMAGES.max} képet tölthettek fel.`;
       if (f.pinterest && !/^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(f.pinterest.trim()))
         e.pinterest = "Ez nem tűnik linknek. Másold be a teljes címet.";
       if (!f.consent) e.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
@@ -232,30 +233,48 @@ export default function ContactForm() {
       {step === 2 && isWedding && (
         <fieldset>
           <legend>Virágok és színek</legend>
+          <p className="cf-note">Élő virággal dolgozunk, a szezon kínálatából.</p>
           <Choice
-            label="Milyen virágokból készüljön a dekoráció?"
-            hint="Főként élő és száraz virággal dolgozunk, kérésre minőségi selyemvirággal is."
-            options={FLOWER_TYPES} value={f.flower_type} onPick={(v) => pick("flower_type", v)}
+            label="Szezonális vagy prémium virágok?"
+            hint="A pontos kategória az inspirációs képek és a személyes egyeztetés alapján dől el, ezért nyugodtan jelöljétek, ha még nem tudjátok."
+            options={FLOWER_CATEGORIES} value={f.flower_category} onPick={(v) => pick("flower_category", v)}
           />
+          {f.flower_category !== PREMIUM && (
+            <div className="cf-field">
+              <span className="cf-label">Jellemző szezonális virágok</span>
+              <span className="cf-hint">Csak ízelítő: a szezonális dekorációnál a virágkötő az aktuális kínálatból válogat a színvilágotokhoz.</span>
+              <div className="cf-inspo">
+                {SEASONAL_EXAMPLES.map((x) => <span key={x}>{x}</span>)}
+              </div>
+            </div>
+          )}
+          {f.flower_category !== SEASONAL && (
+            <div className="cf-field">
+              <span className="cf-label">Prémium virágok</span>
+              <span className="cf-hint">Ezeket külön rendeljük, ezért magasabb az áruk. Jelöljétek, amelyikhez ragaszkodnátok.</span>
+              <div className="cf-checks">
+                {PREMIUM_FLOWERS.map((x) => (
+                  <label key={x} className={`cf-check${f.premium_flowers.includes(x) ? " on" : ""}`}>
+                    <input type="checkbox" checked={f.premium_flowers.includes(x)} onChange={() => toggle("premium_flowers", x)} />
+                    {x}
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
           <div className="cf-field">
             <span className="cf-label">Színvilág</span>
             <span className="cf-hint">Válasszatok egyet vagy többet, vagy írjátok be a sajátotokat.</span>
             <TagPicker options={COLORS} value={f.colors} onChange={(v) => put("colors", v)} placeholder="Egyéb szín, pl. mustár" />
           </div>
           <Choice label="Legyenek zöld levelek is a díszekben?" options={GREENERY} value={f.greenery} onPick={(v) => pick("greenery", v)} />
-          <div className="cf-field">
-            <span className="cf-label">Kedvenc virágok</span>
-            <TagPicker options={FLOWERS} value={f.favorite_flowers} onChange={(v) => put("favorite_flowers", v)} placeholder="Egyéb virág" />
-          </div>
-          <div className="cf-field">
-            <span className="cf-label">Kerülendő virágok</span>
-            <span className="cf-hint">Pl. allergia vagy illat miatt.</span>
-            <TagPicker options={FLOWERS} value={f.avoid_flowers} onChange={(v) => put("avoid_flowers", v)} placeholder="Egyéb virág" />
-          </div>
+          <Field label="Kerülendő virágok" hint="Pl. allergia vagy illat miatt.">
+            <input value={f.avoid_flowers} onChange={set("avoid_flowers")} maxLength={200} placeholder="pl. liliom" />
+          </Field>
           <Choice
-            label="Általános vagy prémium virágok?"
-            hint="A prémium virágok (pl. hortenzia, peónia, orchidea, szarkaláb és a kék árnyalatú virágok) többnyire importból érkeznek, ezért drágábbak. Importtal a szezonon kívüli fajták is megoldhatók."
-            options={FLOWER_CATEGORIES} value={f.flower_category} onPick={(v) => pick("flower_category", v)}
+            label="Érdekel a bérelhető selyemvirágos dekoráció?"
+            hint="Van egy fix, bérelhető selyemvirágos dekorációnk, kedvező áron. Élő virággal kombinálható."
+            options={SILK} value={f.silk_rental} onPick={(v) => pick("silk_rental", v)} stacked
           />
         </fieldset>
       )}
@@ -265,14 +284,19 @@ export default function ContactForm() {
         <fieldset>
           <legend>Mit díszítsünk?</legend>
           <p className="cf-note">Jelöljétek be, amire szükségetek lehet. A részleteket (forma, méret, szalagozás) a személyes egyeztetésen beszéljük át.</p>
-          <div className="cf-checks">
-            {DECOR_POINTS.map((d) => (
-              <label key={d} className={`cf-check${f.decor_points.includes(d) ? " on" : ""}`}>
-                <input type="checkbox" checked={f.decor_points.includes(d)} onChange={() => toggle("decor_points", d)} />
-                {d}
-              </label>
-            ))}
-          </div>
+          {DECOR_GROUPS.map((g) => (
+            <div className="cf-group" key={g.title}>
+              <h3>{g.title}</h3>
+              <div className="cf-checks">
+                {g.items.map((d) => (
+                  <label key={d} className={`cf-check${f.decor_points.includes(d) ? " on" : ""}`}>
+                    <input type="checkbox" checked={f.decor_points.includes(d)} onChange={() => toggle("decor_points", d)} />
+                    {d}
+                  </label>
+                ))}
+              </div>
+            </div>
+          ))}
           {(f.decor_points.includes("Vendégasztalok") || f.decor_points.includes("Főasztal")) && (
             <div className="cf-row">
               {f.decor_points.includes("Vendégasztalok") && (
@@ -292,7 +316,7 @@ export default function ContactForm() {
             </div>
           )}
           <Choice label="Bérelnétek dekorációs elemeket?" hint="pl. boldogságkapu, állványok, táblák, vázák" options={RENTAL} value={f.rental} onPick={(v) => pick("rental", v)} />
-          <Choice label="Helyszíni dekorálás" options={DELIVERY} value={f.delivery} onPick={(v) => pick("delivery", v)} stacked />
+          <p className="cf-note">A helyszíni dekorálást és a rendezvény utáni bontást mi végezzük.</p>
           <div className="cf-field">
             <span className="cf-label">Érdekelnek köszönőajándékok?</span>
             <div className="cf-checks">
@@ -311,9 +335,14 @@ export default function ContactForm() {
       {step === 4 && isWedding && (
         <fieldset>
           <legend>Hol érünk el titeket?</legend>
-          <Field label="Pinterest tábla vagy inspiráció" hint="Ha gyűjtöttetek képeket, másoljátok be a linket." error={errors.pinterest}>
+          <Field label="Pinterest tábla" hint="Ha gyűjtöttetek képeket, másoljátok be a tábla linkjét." error={errors.pinterest}>
             <input type="url" inputMode="url" value={f.pinterest} onChange={set("pinterest")} placeholder="https://pinterest.com/..." />
           </Field>
+          <div className="cf-field">
+            <span className="cf-label">Vagy töltsetek fel képeket</span>
+            <span className="cf-hint">Legfeljebb {IMAGES.max} inspirációs kép (JPG, PNG).</span>
+            <ImageUpload value={f.images} onChange={(v) => put("images", v)} limits={IMAGES} error={errors.images} />
+          </div>
           <Field label="Üzenet" hint="Bármi, amit még fontosnak tartotok." counter={`${f.message.length} / ${MSG_MAX}`}>
             <textarea rows={4} maxLength={MSG_MAX} value={f.message} onChange={set("message")} />
           </Field>

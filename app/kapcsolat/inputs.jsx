@@ -108,6 +108,94 @@ export function LocationInput({ value, onChange, kind = "venue", placeholder, au
   );
 }
 
+/* ---------- Képfeltöltés: kicsinyítés a böngészőben, base64 JPEG ---------- */
+async function shrink(file, edge, quality) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = url;
+    });
+    const scale = Math.min(1, edge / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.round(img.naturalWidth * scale);
+    const h = Math.round(img.naturalHeight * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, w, h);
+    ctx.drawImage(img, 0, 0, w, h);
+    let q = quality;
+    let data = canvas.toDataURL("image/jpeg", q);
+    while (data.length > 900_000 && q > 0.45) {
+      q -= 0.1;
+      data = canvas.toDataURL("image/jpeg", q);
+    }
+    return { data, w, h };
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+export function ImageUpload({ value, onChange, limits, error }) {
+  const [busy, setBusy] = useState(false);
+  const [note, setNote] = useState("");
+  const inputRef = useRef();
+
+  const add = async (files) => {
+    setNote("");
+    const list = Array.from(files || []).filter((f) => f.type.startsWith("image/"));
+    const room = limits.max - value.length;
+    if (!list.length) return;
+    if (list.length > room) setNote(`Legfeljebb ${limits.max} képet tölthettek fel.`);
+    setBusy(true);
+    const next = [...value];
+    for (const file of list.slice(0, room)) {
+      try {
+        const { data } = await shrink(file, limits.edge, limits.quality);
+        const total = next.reduce((s, x) => s + x.data.length, 0) + data.length;
+        if (total > limits.totalBytes) {
+          setNote("A képek együtt túl nagyok. Próbáljatok kevesebbet feltölteni.");
+          break;
+        }
+        const base = file.name.replace(/\.[^.]+$/, "").replace(/[^\w\-áéíóöőúüűÁÉÍÓÖŐÚÜŰ ]/g, "").trim().slice(0, 40) || "kep";
+        next.push({ name: `${base}.jpg`, data });
+      } catch {
+        setNote(`A(z) ${file.name} nem olvasható be. HEIC helyett JPG vagy PNG képet válasszatok.`);
+      }
+    }
+    onChange(next);
+    setBusy(false);
+    if (inputRef.current) inputRef.current.value = "";
+  };
+
+  return (
+    <div className="up">
+      {value.length > 0 && (
+        <ul className="up-list">
+          {value.map((img, i) => (
+            <li key={i}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.data} alt="" />
+              <button type="button" aria-label="Kép törlése" onClick={() => onChange(value.filter((_, j) => j !== i))}>×</button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {value.length < limits.max && (
+        <label className={`up-drop${busy ? " busy" : ""}`}>
+          <input ref={inputRef} type="file" accept="image/*" multiple disabled={busy} onChange={(e) => add(e.target.files)} />
+          <span>{busy ? "Képek előkészítése…" : `Képek kiválasztása (${value.length} / ${limits.max})`}</span>
+        </label>
+      )}
+      {(note || error) && <span className="cf-error" role="alert">{error || note}</span>}
+    </div>
+  );
+}
+
 /* ---------- Címke-választó: javasolt elemek + saját ---------- */
 export function TagPicker({ options, value, onChange, placeholder = "Egyéb, vesszővel elválasztva" }) {
   const [extra, setExtra] = useState("");

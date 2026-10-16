@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
-  INTERESTS, TABLE_LAYOUTS, CHURCH, FLOWER_TYPES, GREENERY, FLOWER_CATEGORIES,
-  RENTAL, DELIVERY, GIFTS, DECOR_POINTS, WEDDING,
+  INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
+  PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
 } from "../../kapcsolat/fields";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
 
@@ -27,6 +27,37 @@ const digits = (v) => clean(v, 6).replace(/[^\d]/g, "");
 const url = (v) => {
   const s = clean(v, 500);
   return /^https?:\/\//i.test(s) ? s : s ? `https://${s}` : "";
+};
+
+// Dekorációs pontok csoportonként: "Szertartás: Boldogságkapu, Odavezető út | …"
+const decorList = (v) => {
+  const picked = Array.isArray(v) ? v : [];
+  return DECOR_GROUPS.map((g) => {
+    const items = g.items.filter((i) => picked.includes(i));
+    return items.length ? `${g.title}: ${items.join(", ")}` : "";
+  })
+    .filter(Boolean)
+    .join(" | ");
+};
+
+// Képek: legfeljebb 5 db base64 JPEG/PNG/WebP, méretkorláttal
+const DATA_URL = /^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/;
+const imageList = (v) => {
+  if (!Array.isArray(v)) return { images: [] };
+  if (v.length > IMAGES.max) return { error: `Legfeljebb ${IMAGES.max} képet tölthettek fel.` };
+  const images = [];
+  let total = 0;
+  for (const [i, img] of v.entries()) {
+    const m = typeof img?.data === "string" ? img.data.match(DATA_URL) : null;
+    if (!m) return { error: "Az egyik kép formátuma nem megfelelő." };
+    if (m[2].length > IMAGES.maxBytes) return { error: "Az egyik kép túl nagy." };
+    total += m[2].length;
+    const ext = m[1] === "jpeg" ? "jpg" : m[1];
+    const base = clean(img.name, 60).replace(/\.[^.]+$/, "").replace(/[\\/:*?"<>|]/g, "") || "kep";
+    images.push({ name: `${i + 1}-${base}.${ext}`, data: m[2] });
+  }
+  if (total > IMAGES.totalBytes) return { error: "A képek együtt túl nagyok." };
+  return { images };
 };
 
 export async function POST(req) {
@@ -73,6 +104,8 @@ export async function POST(req) {
     if (!inRange(digits(body.guest_tables), ...LIMITS.guest_tables)) errors.guest_tables = "Ellenőrizd az asztalszámot.";
     if (!inRange(digits(body.head_table), ...LIMITS.head_table)) errors.head_table = "Ellenőrizd a főasztal létszámát.";
   }
+  const { images, error: imageError } = isWedding ? imageList(body.images) : { images: [] };
+  if (imageError) errors.images = imageError;
   if (!data.consent) errors.consent = "Az adatkezelés elfogadása nélkül nem tudunk válaszolni.";
   if (Object.keys(errors).length) {
     return Response.json({ ok: false, errors }, { status: 422 });
@@ -85,19 +118,22 @@ export async function POST(req) {
         church: oneOf(body.church, CHURCH),
         church_address: body.church === "Igen" ? clean(body.church_address, 200) : "",
         budget: `${formatMoney(body.budget)} Ft`,
-        flower_type: oneOf(body.flower_type, FLOWER_TYPES),
+        silk_rental: oneOf(body.silk_rental, SILK),
         colors: tagList(body.colors, 200),
         greenery: oneOf(body.greenery, GREENERY),
-        favorite_flowers: tagList(body.favorite_flowers),
-        avoid_flowers: tagList(body.avoid_flowers),
+        premium_flowers:
+          body.flower_category === SEASONAL ? "" : manyOf(body.premium_flowers, PREMIUM_FLOWERS),
+        avoid_flowers: clean(body.avoid_flowers, 200),
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
-        decor_points: manyOf(body.decor_points, DECOR_POINTS),
+        decor_points: decorList(body.decor_points),
         guest_tables: digits(body.guest_tables),
         head_table: digits(body.head_table),
         rental: oneOf(body.rental, RENTAL),
-        delivery: oneOf(body.delivery, DELIVERY),
+        delivery: "Helyszíni dekorálás + bontás",
         gifts: manyOf(body.gifts, GIFTS),
         pinterest: url(body.pinterest),
+        image_count: images.length,
+        images,
       }
     : {};
 
@@ -117,6 +153,8 @@ export async function POST(req) {
     id: randomUUID().slice(0, 8).toUpperCase(),
     submitted_at: new Date().toISOString(),
     ...data,
+    image_count: 0,
+    images: [],
     ...wedding,
   };
 

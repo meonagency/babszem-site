@@ -11,48 +11,61 @@ export const INTERESTS = [
 
 export const TABLE_LAYOUTS = ["Kerek asztalok", "Hosszú asztalok", "Vegyes", "Még nem tudjuk"];
 export const CHURCH = ["Igen", "Nem", "Még nem tudjuk"];
-export const FLOWER_TYPES = ["Élő", "Száraz", "Selyem", "Vegyes", "Még nem tudjuk"];
 export const GREENERY = ["Igen", "Nem", "Mindegy"];
-export const FLOWER_CATEGORIES = ["Általános, szezonális", "Prémium", "Még nem tudjuk"];
 export const RENTAL = ["Igen", "Nem", "Még nem tudjuk"];
-export const DELIVERY = [
-  "Elvisszük a műhelyből, magunk dekorálunk",
-  "Kérjük a helyszíni dekorálást",
-  "Kérjük a helyszíni dekorálást és a másnapi bontást",
-  "Még nem tudjuk",
-];
 export const GIFTS = ["Szülőköszöntő", "Vendégajándék"];
 
-// A félkövér pontok a kérdőívből – a részletek (szalagozás, forma stb.) a konzultáción
-export const DECOR_POINTS = [
-  "Menyasszonyi csokor",
-  "Vőlegény kitűző",
-  "Dobócsokor",
-  "Vendégasztalok",
-  "Főasztal",
-  "Kiegészítők (örömszülők, tanúk, koszorúslányok)",
-  "Háttérfal",
-  "Szertartás helyszíne",
-  "Boldogságkapu",
-  "Ültető tábla",
-  "Üdvözlő tábla",
-  "Desszertasztal",
-  "Megemlékező sarok",
-  "Templom",
-  "Autó",
-  "Torta",
-  "Lógatott díszek",
+// Alapból élő virággal dolgozunk; a selyem egy fix, bérelhető dekorációs csomag
+export const SILK = ["Igen, érdekel", "Nem, élő virágot szeretnénk", "Még nem tudjuk"];
+
+export const SEASONAL = "Szezonális (általános)";
+export const PREMIUM = "Prémium";
+export const FLOWER_CATEGORIES = [SEASONAL, PREMIUM, "Még nem tudjuk"];
+
+// Csak inspiráció, nem választható – a virágkötő a szezon kínálatából dolgozik
+export const SEASONAL_EXAMPLES = ["rózsa", "szegfű", "dália", "szellőrózsa", "gipszvirág", "rezgő", "tulipán", "eukaliptusz"];
+
+// Ezeket meg kell rendelni, ezért itt van értelme a választásnak
+export const PREMIUM_FLOWERS = ["peónia", "hortenzia", "orchidea", "liliom", "boglárka", "szarkaláb", "kála"];
+
+export const DELIVERY = ["Kérjük a helyszíni dekorálást és a bontást", "Még nem tudjuk"];
+
+// A részletek (szalagozás, forma, méret) a konzultáción
+export const DECOR_GROUPS = [
+  {
+    title: "Virágos kiegészítők",
+    items: ["Menyasszonyi csokor", "Dobócsokor", "Kitűző", "Csuklódísz", "Koszorúslányok / -fiúk díszei"],
+  },
+  {
+    title: "Vacsora helyszín",
+    items: ["Vendégasztalok", "Főasztal", "Háttérfal"],
+  },
+  {
+    title: "Szertartás",
+    items: ["Boldogságkapu", "Anyakönyvvezető asztala", "Odavezető út"],
+  },
+  {
+    title: "Egyéb dekorációs pontok",
+    items: [
+      "Templomi dekoráció",
+      "Mennyezet fényfüzérezés",
+      "Tábla",
+      "Tükör dekoráció (bérelhető elemekkel)",
+      "Desszertasztal",
+      "Megemlékező pont",
+      "Autódekoráció",
+      "Tortavirágok",
+    ],
+  },
 ];
+export const DECOR_POINTS = DECOR_GROUPS.flatMap((g) => g.items);
 
 export const COLORS = [
   "fehér", "ekrü", "púder", "rózsaszín", "barack", "terrakotta", "bordó",
   "levendula", "lila", "kék", "zsálya", "zöld", "sárga", "arany", "pasztell", "színes",
 ];
 
-export const FLOWERS = [
-  "rózsa", "peónia", "hortenzia", "szegfű", "dália", "gipszvirág", "eukaliptusz",
-  "tulipán", "liliom", "orchidea", "szarkaláb", "boglárka", "szellőrózsa",
-  "levendula", "napraforgó", "rezgő", "pampafű",
-];
+// Inspirációs képek feltöltése
+export const IMAGES = { max: 5, edge: 1400, quality: 0.8, maxBytes: 900_000, totalBytes: 3_500_000 };
 
 export const WEDDING = "Esküvő";
