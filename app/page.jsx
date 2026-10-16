@@ -11,6 +11,7 @@ export default function Home() {
           Virág- és esküvői dekoráció, dekorációs eszközök bérlése, csokrok,
           virágboxok és koszorúk. Ráckeve, Dömsöd és Budapest.
         </p>
+        <a href="/kapcsolat" className="cta">Ajánlatkérés</a>
         <nav className="links" aria-label="Elérhetőség">
           <a href="mailto:babszemviragmuhely@gmail.com">babszemviragmuhely@gmail.com</a>
           <a href="https://www.facebook.com/babszemviragmuhely/" rel="noopener">Facebook</a>
