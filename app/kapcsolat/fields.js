@@ -40,7 +40,7 @@ export const DELIVERY = ["Kérjük a helyszíni dekorálást és a bontást", "M
 export const DECOR_GROUPS = [
   {
     title: "Virágos kiegészítők",
-    items: ["Menyasszonyi csokor", "Dobócsokor", "Kitűző", "Csuklódísz", "Koszorúslányok / -fiúk díszei"],
+    items: ["Menyasszonyi csokor", "Kitűző", "Dobócsokor", "Csuklódísz", "Koszorúslányok / -fiúk díszei"],
   },
   {
     title: "Vacsora helyszín",
@@ -48,14 +48,22 @@ export const DECOR_GROUPS = [
   },
   {
     title: "Szertartás",
-    items: ["Boldogságkapu", "Anyakönyvvezető asztala", "Odavezető út", "Egyéb dekoráció"],
+    items: [
+      "Boldogságkapu dekorációja",
+      "Anyakönyvvezető asztalának dekorációja",
+      "Odavezető út (szalagok a székek oldalán)",
+      "Kapu bérlése",
+      "Székek dekorációja kis virágcsokorral",
+      "Nagyobb virágos dekorációk (földön vagy állványon)",
+      "Egyéb szertartásdekoráció",
+    ],
   },
   {
     title: "Egyéb dekorációs pontok",
     items: [
       "Templomi dekoráció",
       "Mennyezet fényfüzérezés",
-      "Tábla",
+      "Tábla és tábladekoráció",
       "Tükör",
       "Tükör (virágdísszel)",
       "Desszertasztal",
