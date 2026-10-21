@@ -84,4 +84,18 @@ export const COLORS = [
 export const IMAGES = { max: 5, edge: 1400, quality: 0.8, maxBytes: 900_000, totalBytes: 3_500_000 };
 
 export const WEDDING = "Esküvő";
+
+// Papíráru: a Veluma Wedding vállalja (partner). Csak azt kínáljuk, amit a Veluma ténylegesen csinál.
+export const PAPER_HELP = ["Igen", "Nem", "Még nem tudjuk"];
+export const PAPER_ITEMS = [
+  "Meghívó",
+  "Ültetési rend",
+  "Ültetőkártya",
+  "Menükártya",
+  "Asztalszám",
+  "Információs lap / welcome sign",
+];
+export const INVITE_TYPES = ["Letisztult", "Komplex", "Még nem tudjuk"];
+export const INVITE_PAPERS = ["300 g (prémium akvarellpapír)", "200 g (légiesebb)", "Még nem tudjuk"];
+export const PAPER_NOTE_MAX = 600;
 export const BRIDESMAIDS = "Koszorúslányok / -fiúk díszei";

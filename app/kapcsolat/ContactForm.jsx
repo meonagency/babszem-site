@@ -5,6 +5,7 @@ import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
   SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
+  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX,
 } from "./fields";
 import {
   formatPhone, formatMoney, moneyValue, emailSuggestion, EMAIL_RE,
@@ -20,11 +21,13 @@ const INITIAL = {
   flower_category: "", premium_flowers: [], silk_rental: "", colors: [], greenery: "",
   avoid_flowers: "", decor_points: [], guest_tables: "", head_table: "",
   rental: "", gifts: [], pinterest: "", images: [], gift_type: "", bridesmaids: "",
+  paper_help: "", paper_items: [], invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", veluma_consent: false,
 };
 
 const STORE_KEY = "babszem_kapcsolat_v1";
 
 const WEDDING_STEPS = ["Alapok", "Virágok", "Dekoráció", "Elérhetőség"];
+const WEDDING_STEPS_PAPER = ["Alapok", "Virágok", "Dekoráció", "Papíráru", "Elérhetőség"];
 const MSG_MAX = 2000;
 const onlyDigits = (v, max = 4) => v.replace(/\D/g, "").slice(0, max);
 
@@ -70,7 +73,8 @@ export default function ContactForm() {
   const isWedding = f.interest === WEDDING;
   const isRental = f.interest === RENTAL_INTEREST;
   const isGift = f.interest === GIFT_INTEREST;
-  const steps = isWedding ? WEDDING_STEPS : ["Részletek"];
+  const paperOn = isWedding && f.paper_help === "Igen";
+  const steps = isWedding ? (paperOn ? WEDDING_STEPS_PAPER : WEDDING_STEPS) : ["Részletek"];
   const lastStep = steps.length;
 
   const put = (k, v) => {
@@ -95,7 +99,7 @@ export default function ContactForm() {
   // ---- Lépésenkénti ellenőrzés ----
   const check = (s) => {
     const e = {};
-    const contactStep = isWedding ? 4 : 1;
+    const contactStep = isWedding ? steps.length : 1;
     if (s === 1) {
       if (!validFutureDate(f.event_date)) e.event_date = "Válassz mai vagy későbbi dátumot.";
     }
@@ -112,6 +116,10 @@ export default function ContactForm() {
       if (!inRange(f.guest_tables, ...LIMITS.guest_tables)) e.guest_tables = "Adj meg egy valós asztalszámot.";
       if (!inRange(f.head_table, ...LIMITS.head_table)) e.head_table = "Adj meg egy valós létszámot.";
       if (f.decor_points.includes(BRIDESMAIDS) && !(Number(f.bridesmaids) >= 1)) e.bridesmaids = "Add meg, hány darabra lenne szükség.";
+    }
+    if (paperOn && s === 4) {
+      if (!f.paper_items.length) e.paper_items = "Jelölj meg legalább egy papírárut.";
+      if (!f.veluma_consent) e.veluma_consent = "A papíráru-segítséghez szükség van a hozzájárulásra.";
     }
     if (s === contactStep) {
       if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
@@ -423,11 +431,63 @@ export default function ContactForm() {
               ))}
             </div>
           </div>
+          <Choice
+            label="Szeretnétek segítséget a meghívóhoz és a többi papíráruhoz?"
+            hint="Ezt a Veluma Wedding partnerünk vállalja. Ha igent jelöltök, a következő lépésben pár kérdést teszünk fel."
+            options={PAPER_HELP} value={f.paper_help} onPick={(v) => pick("paper_help", v)}
+          />
         </fieldset>
       )}
 
-      {/* ---------- Esküvő 4: Elérhetőség ---------- */}
-      {step === 4 && isWedding && (
+      {/* ---------- Esküvő 4: Papíráru (csak ha kérik) ---------- */}
+      {step === 4 && paperOn && (
+        <fieldset>
+          <legend>Papíráru és meghívó</legend>
+          <p className="cf-note">A papíráruban a Veluma Wedding partnerünk segít. Jelöljétek, mire lenne szükségetek, a Veluma ezek alapján keres meg titeket.</p>
+          <div className={`cf-field${errors.paper_items ? " err" : ""}`}>
+            <span className="cf-label">Milyen papírárura lenne szükségetek?</span>
+            <div className="cf-checks">
+              {PAPER_ITEMS.map((x) => (
+                <label key={x} className={`cf-check${f.paper_items.includes(x) ? " on" : ""}`}>
+                  <input type="checkbox" checked={f.paper_items.includes(x)} onChange={() => toggle("paper_items", x)} />
+                  {x}
+                </label>
+              ))}
+            </div>
+            {errors.paper_items && <span className="cf-error" role="alert">{errors.paper_items}</span>}
+          </div>
+          {f.paper_items.includes("Meghívó") && (
+            <>
+              <Choice
+                label="Milyen meghívót szeretnétek?"
+                hint="Letisztult: egylapos, elegáns meghívó borítékkal. Komplex: több elemből álló szett, külön visszajelző (RSVP) és részletező kártyával."
+                options={INVITE_TYPES} value={f.invite_type} onPick={(v) => pick("invite_type", v)}
+              />
+              <Choice label="Milyen papírra?" options={INVITE_PAPERS} value={f.invite_paper} onPick={(v) => pick("invite_paper", v)} stacked />
+              <Field label="Hány meghívóra lenne szükség?" hint="Kb. mennyi, ha még nem biztos, hagyd üresen.">
+                <Suffix unit="db">
+                  <input inputMode="numeric" value={f.invite_qty} onChange={set("invite_qty", (v) => onlyDigits(v, 3))} />
+                </Suffix>
+              </Field>
+            </>
+          )}
+          <Field label="Megjegyzés" hint="Bármi, amit a Velumának érdemes tudnia a papíráruról." counter={`${f.paper_note.length} / ${PAPER_NOTE_MAX}`}>
+            <textarea rows={3} maxLength={PAPER_NOTE_MAX} value={f.paper_note} onChange={set("paper_note")} />
+          </Field>
+          <label className={`cf-consent${errors.veluma_consent ? " err" : ""}`}>
+            <input type="checkbox" checked={f.veluma_consent} onChange={set("veluma_consent")} />
+            <span>
+              Hozzájárulok, hogy a nevemet, e-mail címemet, az esküvőm dátumát és a papíráruval kapcsolatos válaszaimat a Babszem
+              Virágműhely a Veluma Wedding (Szőke Simeon Károly e.v.) részére továbbítsa, hogy a Veluma ajánlatot adhasson a
+              papírárukra. A részleteket az <a href="/adatkezeles" target="_blank">adatkezelési tájékoztató</a> tartalmazza.
+            </span>
+          </label>
+          {errors.veluma_consent && <p className="cf-error">{errors.veluma_consent}</p>}
+        </fieldset>
+      )}
+
+      {/* ---------- Esküvő 4/5: Elérhetőség ---------- */}
+      {step === steps.length && isWedding && (
         <fieldset>
           <legend>Hol érünk el titeket?</legend>
           <Field label="Pinterest tábla" hint="Ha gyűjtöttetek képeket, másoljátok be a tábla linkjét." error={errors.pinterest}>

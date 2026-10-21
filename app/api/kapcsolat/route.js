@@ -3,6 +3,7 @@ import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
+  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX,
 } from "../../kapcsolat/fields";
 import { docHtml, emailHtml, folderName } from "./doc";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
@@ -120,6 +121,10 @@ export async function POST(req) {
     if (body.church === "Igen" && clean(body.church_address, 200).length < 2) errors.church_address = "Kérjük, adjátok meg a templom helyszínét.";
     if (moneyValue(body.budget) < LIMITS.budget_min) errors.budget = "A minimális keretösszeg 100 000 Ft. Ennél alacsonyabb összegből nem tudunk pontos esküvői ajánlatot adni.";
     if (!inRange(digits(body.guests), ...LIMITS.guests)) errors.guests = "Ellenőrizd a létszámot.";
+    if (oneOf(body.paper_help, PAPER_HELP) === "Igen") {
+      if (body.veluma_consent !== true) errors.veluma_consent = "A papíráru-segítséghez szükség van a hozzájárulásra.";
+      if (!manyOf(body.paper_items, PAPER_ITEMS)) errors.paper_items = "Jelölj meg legalább egy papírárut.";
+    }
     if (!inRange(digits(body.guest_tables), ...LIMITS.guest_tables)) errors.guest_tables = "Ellenőrizd az asztalszámot.";
     if (!inRange(digits(body.head_table), ...LIMITS.head_table)) errors.head_table = "Ellenőrizd a főasztal létszámát.";
   }
@@ -150,6 +155,17 @@ export async function POST(req) {
         delivery: "Helyszíni dekorálás + bontás",
         gifts: manyOf(body.gifts, GIFTS),
         pinterest: url(body.pinterest),
+        paper_help: oneOf(body.paper_help, PAPER_HELP),
+        ...(oneOf(body.paper_help, PAPER_HELP) === "Igen"
+          ? {
+              paper_items: manyOf(body.paper_items, PAPER_ITEMS),
+              invite_type: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? oneOf(body.invite_type, INVITE_TYPES) : "",
+              invite_paper: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? oneOf(body.invite_paper, INVITE_PAPERS) : "",
+              invite_qty: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? digits(body.invite_qty) : "",
+              paper_note: clean(body.paper_note, PAPER_NOTE_MAX),
+              veluma_consent: body.veluma_consent === true ? "Igen" : "",
+            }
+          : { paper_items: "", invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", veluma_consent: "" }),
         image_count: images.length,
         images,
       }

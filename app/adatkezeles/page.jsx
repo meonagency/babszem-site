@@ -18,6 +18,12 @@ export default function Adatkezeles() {
           Make automatizálási platformot, az értesítéshez a Telegramot használjuk.
         </p>
         <p>
+          Ha az esküvői űrlapon papíráru-segítséget (meghívó és egyéb papíráru) kérsz és ehhez külön hozzájárulsz,
+          a nevedet, e-mail címedet, az esküvő dátumát és a papíráruval kapcsolatos válaszaidat a Veluma Wedding
+          (Szőke Simeon Károly egyéni vállalkozó) is megkapja, hogy ajánlatot adhasson. Ezt a hozzájárulást
+          bármikor visszavonhatod.
+        </p>
+        <p>
           A részletes tájékoztató hamarosan felkerül. Addig is kérdéssel vagy az adataid törlésével
           kapcsolatban írj a <a href="mailto:babszemviragmuhely@gmail.com">babszemviragmuhely@gmail.com</a> címre.
         </p>
