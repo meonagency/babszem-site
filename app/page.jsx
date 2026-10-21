@@ -19,7 +19,10 @@ export default function Home() {
         </nav>
       </section>
       <footer className="foot">
-        Digitális partner: <a href="https://meonagency.com" rel="noopener">MeOn Agency</a>
+        <a href="https://meonagency.com" rel="noopener" className="partner">
+          <span>Digitális partner</span>
+          <img src="/meon-agency-logo.svg" alt="MeOn Agency" width="78" height="20" />
+        </a>
       </footer>
     </main>
   );
