@@ -102,11 +102,6 @@ ${table([
   ["Köszönőajándék", d.gifts],
 ])}
 
-${d.paper_help === "Igen" ? `${h2("Papíráru (Veluma Wedding)")}
-${table([
-  ["Papíráru", "Igen – a részletekkel a Veluma Wedding foglalkozik"],
-])}` : ""}
-
 ${h2("Inspiráció")}
 ${table([
   ["Pinterest tábla", link(d.pinterest), true],
