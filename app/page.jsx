@@ -8,21 +8,32 @@ export default function Home() {
         <LogoStacked />
         <p className="eyebrow">Az oldal hamarosan elkészül</p>
         <p className="lead">
-          Virág- és esküvői dekoráció, dekorációs eszközök bérlése, csokrok,
-          virágboxok és koszorúk. Ráckeve, Dömsöd és Budapest.
+          <span className="nw">Virág- és esküvői dekoráció, dekorációs eszközök bérlése, csokrok, virágboxok és koszorúk.</span>
+          <br />
+          Ráckeve, Dömsöd és Budapest.
         </p>
         <a href="/kapcsolat" className="cta">Ajánlatkérés</a>
         <nav className="links" aria-label="Elérhetőség">
-          <a href="mailto:babszemviragmuhely@gmail.com">babszemviragmuhely@gmail.com</a>
-          <a href="https://www.facebook.com/babszemviragmuhely/" rel="noopener">Facebook</a>
-          <a href="https://www.instagram.com/babszemviragmuhely/" rel="noopener">Instagram</a>
+          <a href="mailto:babszemviragmuhely@gmail.com" className="mail">babszemviragmuhely@gmail.com</a>
+          <div className="social">
+            <span className="soc">
+              <img src="/instagram-icon.svg" alt="" width="20" height="20" />
+              <a href="https://www.instagram.com/babszemviragmuhely/" rel="noopener">Instagram</a>
+            </span>
+            <span className="soc">
+              <img src="/facebook-icon.svg" alt="" width="20" height="20" />
+              <a href="https://www.facebook.com/babszemviragmuhely/" rel="noopener">Facebook</a>
+            </span>
+          </div>
         </nav>
       </section>
       <footer className="foot">
-        <a href="https://meonagency.com" rel="noopener" className="partner">
-          <span>Digitális partner: MeOn Agency</span>
-          <img src="/meon-agency-logo.svg" alt="MeOn Agency" width="78" height="20" />
-        </a>
+        <span className="partner">
+          <a href="https://meonagency.com" rel="noopener">Digitális partner: MeOn Agency</a>
+          <a href="https://meonagency.com" rel="noopener" className="plogo" aria-label="MeOn Agency">
+            <img src="/meon-agency-logo.svg" alt="MeOn Agency" width="78" height="20" />
+          </a>
+        </span>
       </footer>
     </main>
   );

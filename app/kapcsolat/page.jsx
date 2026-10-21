@@ -27,10 +27,12 @@ export default function KapcsolatPage() {
       </section>
       <ContactForm />
       <footer className="foot">
-        <a href="https://meonagency.com" rel="noopener" className="partner">
-          <span>Digitális partner: MeOn Agency</span>
-          <img src="/meon-agency-logo.svg" alt="MeOn Agency" width="78" height="20" />
-        </a>
+        <span className="partner">
+          <a href="https://meonagency.com" rel="noopener">Digitális partner: MeOn Agency</a>
+          <a href="https://meonagency.com" rel="noopener" className="plogo" aria-label="MeOn Agency">
+            <img src="/meon-agency-logo.svg" alt="MeOn Agency" width="78" height="20" />
+          </a>
+        </span>
       </footer>
     </main>
   );
