@@ -104,12 +104,7 @@ ${table([
 
 ${d.paper_help === "Igen" ? `${h2("Papíráru (Veluma Wedding)")}
 ${table([
-  ["Segítséget kérnek", "Igen (a Veluma felveszi a kapcsolatot)"],
-  ["Papíráruk", d.paper_items],
-  ["Meghívó típusa", d.invite_type],
-  ["Meghívó papírja", d.invite_paper],
-  ["Meghívók száma", d.invite_qty ? `${d.invite_qty} db` : ""],
-  ["Megjegyzés", d.paper_note],
+  ["Papíráru", "Igen – a részletekkel a Veluma Wedding foglalkozik"],
 ])}` : ""}
 
 ${h2("Inspiráció")}
