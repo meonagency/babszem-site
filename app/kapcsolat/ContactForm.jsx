@@ -479,7 +479,7 @@ export default function ContactForm() {
             <input type="checkbox" checked={f.veluma_consent} onChange={set("veluma_consent")} />
             <span>
               Hozzájárulok, hogy a nevemet, e-mail címemet, az esküvőm dátumát és a papíráruval kapcsolatos válaszaimat a Babszem
-              Virágműhely a Veluma Wedding (Szőke Simeon Károly e.v.) részére továbbítsa, hogy a Veluma ajánlatot adhasson a
+              Virágműhely a Veluma Wedding részére továbbítsa, hogy a Veluma ajánlatot adhasson a
               papírárukra. A részleteket az <a href="/adatkezeles" target="_blank">adatkezelési tájékoztató</a> tartalmazza.
             </span>
           </label>
