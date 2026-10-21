@@ -443,6 +443,7 @@ export default function ContactForm() {
       {step === 4 && paperOn && (
         <fieldset>
           <legend>Papíráru és meghívó</legend>
+          <img src="/veluma-logo.svg" alt="Veluma Wedding" className="cf-partner-logo" width="120" height="30" />
           <p className="cf-note">A papíráruban a Veluma Wedding partnerünk segít. Jelöljétek, mire lenne szükségetek, a Veluma ezek alapján keres meg titeket.</p>
           <div className={`cf-field${errors.paper_items ? " err" : ""}`}>
             <span className="cf-label">Milyen papírárura lenne szükségetek?</span>
