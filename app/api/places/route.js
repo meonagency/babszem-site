@@ -53,7 +53,7 @@ export async function GET(req) {
           value: kind === "city" ? main : [main, secondary].filter(Boolean).join(", "),
         };
       });
-    return Response.json({ items }, { headers: { "Cache-Control": "private, max-age=300" } });
+    return Response.json({ items }, { headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "private, max-age=300" } });
   } catch (err) {
     console.error("[places]", err);
     return Response.json({ items: [] });
