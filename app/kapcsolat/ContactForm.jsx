@@ -297,7 +297,7 @@ export default function ContactForm() {
         <fieldset>
           <legend>Az esküvőtök</legend>
           <div className="cf-row">
-            <Field label="Időpont" error={errors.event_date} required>
+            <Field label="Időpont" hint="Az esküvő tervezett napja." error={errors.event_date} required>
               <input type="date" min={todayISO()} max={todayISO(4)} value={f.event_date} onChange={set("event_date")} />
             </Field>
             <Field label="Létszám" hint="Kb. hány vendég?" error={errors.guests}>
@@ -530,7 +530,7 @@ function Contact({ f, set, put, errors, suggestion, wedding }) {
         <input value={f.name} onChange={set("name")} autoComplete="name" maxLength={120} />
       </Field>
       <div className="cf-row">
-        <Field label="E-mail" error={errors.email} required>
+        <Field label="E-mail" hint="pl. nev@email.hu" error={errors.email} required>
           <input type="email" inputMode="email" value={f.email} onChange={set("email", (v) => v.trim())} autoComplete="email" maxLength={160} />
           {suggestion && !errors.email && (
             <button type="button" className="cf-suggest" onClick={() => put("email", suggestion)}>

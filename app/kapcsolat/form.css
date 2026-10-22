@@ -199,3 +199,5 @@
 .kp .foot { text-align: center; margin-top: 56px; }
 
 .cf-partner-logo { display: block; height: 30px; width: auto; margin: 0 0 14px; opacity: 0.9; }
+
+.cf-field input[type="date"] { height: 53px; box-sizing: border-box; }
