@@ -436,6 +436,11 @@ export default function ContactForm() {
             hint="Ezt a Veluma Wedding partnerünk vállalja. Ha igent jelöltök, a következő lépésben pár kérdést teszünk fel."
             options={PAPER_HELP} value={f.paper_help} onPick={(v) => pick("paper_help", v)}
           />
+          <Choice
+            label="Érdekel titeket digitális esküvői weboldal is?"
+            hint={<>A Veluma Wedding fine-art esküvői weboldalt is készít visszajelzéssel (RSVP). <a href={VELUMA_DIGITAL_URL} target="_blank" rel="noopener">Megnézem a Veluma oldalán</a></>}
+            options={DIGITAL_INTEREST} value={f.digital_interest} onPick={(v) => pick("digital_interest", v)}
+          />
         </fieldset>
       )}
 
@@ -472,11 +477,6 @@ export default function ContactForm() {
               </Field>
             </>
           )}
-          <Choice
-            label="Érdekel titeket digitális esküvői weboldal is?"
-            hint={<>A Veluma Wedding fine-art esküvői weboldalt is készít visszajelzéssel (RSVP). <a href={VELUMA_DIGITAL_URL} target="_blank" rel="noopener">Megnézem a Veluma oldalán</a></>}
-            options={DIGITAL_INTEREST} value={f.digital_interest} onPick={(v) => pick("digital_interest", v)}
-          />
           <Field label="Megjegyzés" hint="Bármi, amit a Velumának érdemes tudnia a papíráruról." counter={`${f.paper_note.length} / ${PAPER_NOTE_MAX}`}>
             <textarea rows={3} maxLength={PAPER_NOTE_MAX} value={f.paper_note} onChange={set("paper_note")} />
           </Field>

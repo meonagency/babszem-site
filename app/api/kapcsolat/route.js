@@ -156,6 +156,7 @@ export async function POST(req) {
         gifts: manyOf(body.gifts, GIFTS),
         pinterest: url(body.pinterest),
         paper_help: oneOf(body.paper_help, PAPER_HELP),
+        digital_interest: oneOf(body.digital_interest, DIGITAL_INTEREST),
         ...(oneOf(body.paper_help, PAPER_HELP) === "Igen"
           ? {
               paper_items: manyOf(body.paper_items, PAPER_ITEMS),
@@ -163,10 +164,9 @@ export async function POST(req) {
               invite_paper: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? oneOf(body.invite_paper, INVITE_PAPERS) : "",
               invite_qty: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? digits(body.invite_qty) : "",
               paper_note: clean(body.paper_note, PAPER_NOTE_MAX),
-              digital_interest: oneOf(body.digital_interest, DIGITAL_INTEREST),
               veluma_consent: body.veluma_consent === true ? "Igen" : "",
             }
-          : { paper_items: "", invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", digital_interest: "", veluma_consent: "" }),
+          : { paper_items: "", invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", veluma_consent: "" }),
         image_count: images.length,
         images,
       }
