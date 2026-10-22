@@ -3,7 +3,7 @@ import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
-  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX,
+  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST,
 } from "../../kapcsolat/fields";
 import { docHtml, emailHtml, folderName } from "./doc";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
@@ -163,9 +163,10 @@ export async function POST(req) {
               invite_paper: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? oneOf(body.invite_paper, INVITE_PAPERS) : "",
               invite_qty: Array.isArray(body.paper_items) && body.paper_items.includes("Meghívó") ? digits(body.invite_qty) : "",
               paper_note: clean(body.paper_note, PAPER_NOTE_MAX),
+              digital_interest: oneOf(body.digital_interest, DIGITAL_INTEREST),
               veluma_consent: body.veluma_consent === true ? "Igen" : "",
             }
-          : { paper_items: "", invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", veluma_consent: "" }),
+          : { paper_items: "", invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", digital_interest: "", veluma_consent: "" }),
         image_count: images.length,
         images,
       }

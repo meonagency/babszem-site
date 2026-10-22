@@ -98,4 +98,6 @@ export const PAPER_ITEMS = [
 export const INVITE_TYPES = ["Letisztult", "Komplex", "Még nem tudjuk"];
 export const INVITE_PAPERS = ["300 g (prémium akvarellpapír)", "200 g (légiesebb)", "Még nem tudjuk"];
 export const PAPER_NOTE_MAX = 600;
+export const DIGITAL_INTEREST = ["Igen", "Nem", "Még nem tudjuk"];
+export const VELUMA_DIGITAL_URL = "https://veluma.hu/digitalis/signature";
 export const BRIDESMAIDS = "Koszorúslányok / -fiúk díszei";

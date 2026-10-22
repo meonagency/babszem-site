@@ -5,7 +5,7 @@ import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
   SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
-  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX,
+  PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST, VELUMA_DIGITAL_URL,
 } from "./fields";
 import {
   formatPhone, formatMoney, moneyValue, emailSuggestion, EMAIL_RE,
@@ -21,7 +21,7 @@ const INITIAL = {
   flower_category: "", premium_flowers: [], silk_rental: "", colors: [], greenery: "",
   avoid_flowers: "", decor_points: [], guest_tables: "", head_table: "",
   rental: "", gifts: [], pinterest: "", images: [], gift_type: "", bridesmaids: "",
-  paper_help: "", paper_items: [], invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", veluma_consent: false,
+  paper_help: "", paper_items: [], invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", digital_interest: "", veluma_consent: false,
 };
 
 const STORE_KEY = "babszem_kapcsolat_v1";
@@ -472,6 +472,11 @@ export default function ContactForm() {
               </Field>
             </>
           )}
+          <Choice
+            label="Érdekel titeket digitális esküvői weboldal is?"
+            hint={<>A Veluma Wedding fine-art esküvői weboldalt is készít visszajelzéssel (RSVP). <a href={VELUMA_DIGITAL_URL} target="_blank" rel="noopener">Megnézem a Veluma oldalán</a></>}
+            options={DIGITAL_INTEREST} value={f.digital_interest} onPick={(v) => pick("digital_interest", v)}
+          />
           <Field label="Megjegyzés" hint="Bármi, amit a Velumának érdemes tudnia a papíráruról." counter={`${f.paper_note.length} / ${PAPER_NOTE_MAX}`}>
             <textarea rows={3} maxLength={PAPER_NOTE_MAX} value={f.paper_note} onChange={set("paper_note")} />
           </Field>
