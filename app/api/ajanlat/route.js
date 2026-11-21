@@ -4,6 +4,7 @@
 //  - offer: az űrlap offer_json mezője (objektum vagy JSON szöveg)
 //  - files: Drive files.list eredmény (files tömb vagy a teljes válasz), mezők: id,name,parents,thumbnailLink
 //  - prices: { kiegeszitok, vacsora, szertartas, egyeb, ajandek, munkadij, uzemanyag, vegosszeg } – szöveges ársávok
+//    (űrlapnál ugyanezek a kulcsok külön mezőként)
 //  - prefer / skip: fájlnevek (vesszővel vagy soronként) – kézi képcsere a táblázatból
 //  - format: "pdf" (alap) vagy "html" (ellenőrzéshez)
 import { timingSafeEqual } from "node:crypto";
@@ -73,9 +74,11 @@ async function renderPdf(html, validUntil) {
 }
 
 export async function POST(req) {
+  // JSON vagy űrlap (application/x-www-form-urlencoded / multipart) – a Make az utóbbit küldi
   let body;
   try {
-    body = await req.json();
+    const type = req.headers.get("content-type") || "";
+    body = type.includes("form") ? Object.fromEntries(await req.formData()) : await req.json();
   } catch {
     return Response.json({ ok: false, error: "Hibás kérés." }, { status: 400 });
   }
@@ -86,7 +89,8 @@ export async function POST(req) {
 
   const filesIn = parse(body.files);
   const files = Array.isArray(filesIn) ? filesIn : Array.isArray(filesIn?.files) ? filesIn.files : [];
-  const prices = parse(body.prices) || {};
+  const PRICE_KEYS = ["kiegeszitok", "vacsora", "szertartas", "egyeb", "ajandek", "munkadij", "uzemanyag", "vegosszeg"];
+  const prices = parse(body.prices) || Object.fromEntries(PRICE_KEYS.map((k) => [k, String(body[k] ?? "").trim()]));
   const validUntil = String(body.valid_until || "").trim() || budapestPlusDays(14);
 
   const planned = plan(offer, files, { prefer: body.prefer, skip: body.skip });
