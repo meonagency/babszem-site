@@ -202,6 +202,28 @@ export async function POST(req) {
     payload.folder_name = folderName(payload);
     payload.doc_html = docHtml(payload, decor_groups);
     payload.email_html = emailHtml(payload);
+    // Ajánlatgenerátor bemenete: a Make az Ajánlatok táblázatba írja, onnan hívja a /api/ajanlat végpontot
+    payload.offer_json = JSON.stringify({
+      id: payload.id,
+      name: payload.name,
+      email: payload.email,
+      event_date: payload.event_date,
+      location: payload.location,
+      guests: payload.guests,
+      table_layout: payload.table_layout,
+      church: payload.church,
+      church_address: payload.church_address,
+      flower_category: payload.flower_category,
+      premium_flowers: payload.premium_flowers,
+      colors: payload.colors,
+      greenery: payload.greenery,
+      avoid_flowers: payload.avoid_flowers,
+      decor_points: decor_groups.flatMap((g) => g.items.map((i) => i.replace(/ \(\d+ db\)$/, ""))),
+      bridesmaids: digits(body.bridesmaids),
+      guest_tables: payload.guest_tables,
+      head_table: payload.head_table,
+      gifts: payload.gifts ? payload.gifts.split(", ") : [],
+    });
   }
 
   try {

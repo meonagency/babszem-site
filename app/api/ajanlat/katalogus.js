@@ -1,0 +1,137 @@
+// Ajánlatgenerátor törzsadatai: szekciók, tételleírások (szövegtár), képtár-mappák.
+// A tételnevek egyeznek az űrlap DECOR_GROUPS / GIFTS értékeivel (app/kapcsolat/fields.js).
+// A szövegek piszkozatok (v1, 2026-11), Babi saját szavai a minta-ajánlatból, ahol volt ilyen.
+
+// Babi Drive: Weboldal / Ajánlat – Képtár
+export const KEPTAR_ID = "1P4HyfDl_BCxEQLN9lRyEqzsS6ms-Wjw6";
+export const BORITO_FOLDER = "1Rrlpl7HnFVEzxyWxSrogd2VWeFZyYAyH"; // 06 Ajánlat alapanyag / borító, bemutatkozó képek
+
+// Az ajánlat szekciói, a megjelenés sorrendjében. key = a táblázat ársáv-oszlopának kulcsa.
+export const SECTIONS = [
+  { key: "kiegeszitok", title: "Virágos kiegészítők", group: "Virágos kiegészítők" },
+  { key: "vacsora", title: "Vacsora helyszín", group: "Vacsora helyszín" },
+  { key: "szertartas", title: "Szertartás", group: "Szertartás" },
+  { key: "egyeb", title: "Egyéb dekorációs pontok", group: "Egyéb dekorációs pontok" },
+  { key: "ajandek", title: "Köszönőajándék", group: "Köszönőajándék" },
+];
+
+export const GIFT_ITEMS = ["Szülőköszöntő", "Vendégajándék"];
+
+// tétel → { folder: képtár-mappa ID, label: megjelenő név, text: leírás }
+export const ITEMS = {
+  // 01 Virágos kiegészítők
+  "Menyasszonyi csokor": {
+    folder: "1GnXK12tXeK1QxnXnTwKikMrKEb0p_MhD",
+    text: "A színvilághoz és a virágkategóriához igazítva készül. Ha van kedvenc képetek, küldjétek el, és ahhoz igazodunk.",
+  },
+  "Kitűző": { folder: "1KnD256D21kk5R53rY3qnjKp1BnYDzRWA", text: "A menyasszonyi csokorhoz illő virágokkal." },
+  "Dobócsokor": { folder: "1pIC5BxRFTWz1xGSE9-bd8d3ML0dRdhig", text: "Kisebb csokor a menyasszonyi csokorhoz illően." },
+  "Csuklódísz": { folder: "13GnSQ0WfCgoyuNMlmrVM-XAP00dKnYIE", text: "A menyasszonyi csokor virágaival." },
+  "Koszorúslányok / -fiúk díszei": {
+    folder: "1cK1QBo6orX_0B7IbGBPEKj4LELPHqfAO",
+    label: "Koszorúslányok, -fiúk díszei",
+    text: "Koszorúslánycsokor, csuklódísz vagy fiolában készített kitűző.",
+  },
+  // 02 Vacsora helyszín
+  "Vendégasztalok": {
+    folder: "1UbYOKhg17r3MJ9Ssjif54QojjgrkrOce",
+    text: "Kis vázás, kaspós dekoráció, gyertyás díszítés (főként LED-gyertyával; valódi gyertya a helyszín engedélyétől függ), légies elrendezés, időtálló stílus.",
+  },
+  "Főasztal": {
+    folder: "1W38x9egoTfF5BSyVI_Va-e24PnfOA0E2",
+    text: "Gyertyával és dekorelemekkel. Változatok: szálas virágok kis vázákban két oldalt vagy végig az asztalon, tűzött díszek, földön álló díszek az asztal előtt.",
+  },
+  "Háttérfal": {
+    folder: "1RU_GMMa3wH-Sg9zrHbN8Fbhb7oESBAE4",
+    text: "Alap háttér legfeljebb 4 m szélességben és 2,5 m magasságban. Kiegészíthető karikával, selyem virágzuhataggal vagy élő zöld növénydekorációval.",
+  },
+  // 03 Szertartás
+  "Boldogságkapu dekorációja": {
+    folder: "1RmheHl_aefEHL2DY21iyG6JoWRbo_2VL",
+    label: "Boldogságkapu",
+    text: "Virágos kompozíció a kapun, kérésre textillel.",
+  },
+  "Anyakönyvvezető asztalának dekorációja": {
+    folder: "1_e7pkq7WjYxvZNd8Au3wiBZV_FqOu4GK",
+    label: "Anyakönyvvezető asztala",
+    text: "Kis vázás virágdekoráció.",
+  },
+  "Odavezető út (szalagok a székek oldalán)": {
+    folder: "1zfvy-Z0kULTl1aXEeEGZo4ahbq6oQ55H",
+    label: "Odavezető út",
+    text: "Szalagok a székek oldalán. Kérésre sziromszórt út vagy a széklábakhoz leszúrt virágok.",
+  },
+  "Kapu bérlése": { folder: "1RmheHl_aefEHL2DY21iyG6JoWRbo_2VL", text: "Több kaputípus közül választhattok." },
+  "Székek dekorációja kis virágcsokorral": {
+    folder: "1OVH5wasbfAOkBT7735HcrCTH44B0UAyM",
+    label: "Székek dekorációja",
+    text: "Kis virágcsokor a főszékeken és az odavezető út székein.",
+  },
+  "Nagyobb virágos dekorációk (földön vagy állványon)": {
+    folder: "1UGRdUecIiWI5890B-qMpOHyy6FOLwvle",
+    label: "Nagyobb virágos dekorációk",
+    text: "Földön vagy állványon, egyedi tervezéssel.",
+  },
+  "Egyéb szertartásdekoráció": {
+    folder: "11ENMlYqkL7wMdlkT1m4dQamr7tfJS_Rv",
+    text: "A részleteket a konzultáción egyeztetjük.",
+  },
+  // 04 Egyéb
+  "Templomi dekoráció": {
+    folder: "16qdWqdvs52qipFJIK3FfavoGdFUm9zpH",
+    text: "A templom szabályaihoz igazított virágdekoráció. A díszítési pontokat a konzultáción egyeztetjük.",
+  },
+  "Mennyezet fényfüzérezés": { folder: "1aCyfQYPyH-nrdijQd8xHgkyIi1MHLOiu", text: "200 m meleg fényű fényfüzér. Az ár a helyszíntől és a felszerelés nehézségétől függ." },
+  "Tábla és tábladekoráció": {
+    folder: "17J-XMQkDNK9p3jrVrd0zPPQnieQa2PmR",
+    text: "Virágdísszel. A tábla anyagát és szövegét a konzultáción egyeztetjük.",
+  },
+  "Tükör": { folder: "1V9LAGM--i6c5j1DnjJfQPbEelMEdsCX7", text: "Dekoráció a tükör lábánál, kis vázás dekorelemekkel." },
+  "Tükör (virágdísszel)": { folder: "1ZxOnvdWzX5uujQU_gthCxeJ5e6-0Aano", label: "Tükör virágdísszel", text: "Tűzött virágdísz a tükrön vagy a lábánál." },
+  "Desszertasztal": { folder: "1fNI2E2zAWl8aUhdCqdFyzUVSzC_TkxTU", text: "Dekorációs táblák és kis vázás dekoráció." },
+  "Megemlékező pont": { folder: "1h1D1lctXfmbdI8H_8NjQ4OdemVSXNL9z", text: "Virágdekoráció az emlékezés helyéhez." },
+  "Autódekoráció": { folder: "1yC2S_GJnLUgLAGPa6cyJd1R55J_XXpAG", text: "Szalagok a visszapillantókra, speciális tartóba rögzített dísz a motorháztetőre." },
+  "Tortavirágok": { folder: "1oJe-Qeyp4GopR4sCeSarzZ4bMKssbd-l", text: "Alap virágos dekoráció. Jellemzően a cukrász biztosítja, ezt érdemes vele egyeztetni." },
+  // 05 Köszönőajándék
+  "Szülőköszöntő": { folder: "1GuCcOAQWyxoiMx2DmLUIjH4dDeMFfpZ-", text: "A formáját és a virágokat a konzultáción választjuk ki." },
+  "Vendégajándék": { folder: "1gRCyHwd1viKl_cr3huRiY6QlxaIoxefe", text: "A formáját és a mennyiségét a konzultáción egyeztetjük." },
+};
+
+// Az összes képtár-mappa, amelyet a Make egy Drive API hívással listáz (q: '<id>' in parents or …)
+export const ALL_FOLDERS = [...new Set([BORITO_FOLDER, ...Object.values(ITEMS).map((i) => i.folder)])];
+
+export const TEXTS = {
+  intro: [
+    "Mindenekelőtt szívből gratulálunk nektek!",
+    "Az ajánlatban minden tétel szerepel, amelyet az ajánlatkérésben kiválasztottatok, így körülbelüli képet kaptok a költségekről. A tételeknél ársávot adunk meg, a végleges ár a részletek egyeztetése után alakul ki. Az ajánlat bővíthető és alakítható: ha virágosabb díszítést szeretnétek, szívesen tervezünk tovább, de már az alapdekorációnk is felöltözteti a helyszínt és a dekorációs pontokat.",
+  ],
+  disclaimer: "Ez az ajánlat a megadott adataitok alapján, egyedileg készült, és díjmentes. Az ajánlat nem jelenti az időpont foglalását.",
+  consult:
+    "Dekorációs ajánlatunk elfogadása után online találkozunk, és egyeztetjük a részleteket. Ezt a dokumentumot közösen töltjük meg képekkel és pontos információkkal. A konzultáció legalább egy óra, díja 5 000 Ft, amelyet megrendelés esetén a végső árból jóváírunk.",
+  vacsoraGift: "választható asztalszámtartó, asztali futó vagy gyöngyös kiegészítés.",
+  about: [
+    "A megállapodás után fix árral dolgozunk, utólag nem merül fel rejtett költség.",
+    "Csapatban dolgozunk, így a dekoráció akkor is elkészül, ha valamelyikünk váratlanul kiesik.",
+    "Szerződést kötünk, így mindkét fél elköteleződik az adott napra.",
+    "Rugalmasak vagyunk: a megbeszélteken bizonyos kereteken belül később is lehet módosítani.",
+    "Mindig 10%-kal több virággal dolgozunk, mint amennyit megbeszéltünk.",
+    "A hajnali bontásért nem számolunk fel felárat.",
+  ],
+  important:
+    "A 2027/2028-as esküvői szezonra vonatkozóan kiadott ajánlatok nem jelentik az időpont foglalását. A szabad időpontok száma véges, ezért ha velünk szeretnétek dolgozni, kérjük, minél előbb jelezzetek vissza. Az ajánlatban szereplő ársávok a megküldéstől számított 2 hétig érvényesek. Az ajánlat elkészítése díjmentes, és mindig egyedileg, a megadott információk alapján történik.",
+  next:
+    "Kérjük, döntésetekről minél előbb tájékoztassatok minket, és akkor is jelezzetek vissza, ha másképp döntötök. Az ajánlat minden esetben rátok szabva készül, így egy rövid válasz nekünk is sokat segít. A folyamatos foglalások miatt előfordulhat, hogy időközben mi is keresünk titeket.",
+  work: [
+    ["Előkészítés", "A dekoráció és a virágok elkészítése."],
+    ["Az esküvő napján", "Helyszíni rakodás, dekorálás, installáció (kb. 5–7 óra, csapattal)."],
+    ["Másnap", "Rakodás, bontás, elpakolás (kb. 4–5 óra)."],
+  ],
+  fuel: "Ráckevéről, két nap oda-vissza, 150 Ft/km",
+};
+
+export const CONTACT = {
+  phone: "+36 20 775 8226",
+  email: "info@babszemviragmuhely.com",
+  web: "babszemviragmuhely.com",
+  ig: "@babszemviragmuhely",
+};
