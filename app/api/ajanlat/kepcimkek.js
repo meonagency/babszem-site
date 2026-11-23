@@ -78,7 +78,6 @@ export const KEPCIMKEK = {
   "altalanos_feher-zold_kerekded_21.jpg": "rózsa rezgő liziantusz",
   "altalanos_feher-zold_kerekded_22.jpg": "hortenzia",
   "altalanos_rozsaszin-barack-krem-feher_kerekded_29.heic": "rózsa dália rezgő",
-  "altalanos_rozsaszin-barack-lila_31.jpg": "rózsa asztilbe",
   "premium_feher-krem-puder_modern_03.jpg": "orchidea kála szegfű rezgő",
   "premium_feher_kerekded_23.jpg": "rózsa",
   "premium_feher_modern_01.heic": "liziantusz rózsa szegfű",
