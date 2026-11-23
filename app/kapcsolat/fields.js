@@ -1,4 +1,5 @@
 // Az űrlap opciói egy helyen – a szerver oldali ellenőrzés is ezt használja.
+import { COLOR_CHIPS } from "../szinek";
 
 export const RENTAL_INTEREST = "Eszközbérlés";
 export const GIFT_INTEREST = "Ajándék";
@@ -75,10 +76,8 @@ export const DECOR_GROUPS = [
 ];
 export const DECOR_POINTS = DECOR_GROUPS.flatMap((g) => g.items);
 
-export const COLORS = [
-  "fehér", "ekrü", "púder", "rózsaszín", "barack", "terrakotta", "bordó",
-  "levendula", "lila", "kék", "zsálya", "zöld", "sárga", "arany", "pasztell", "színes",
-];
+// A színek a közös színtáblából jönnek (app/szinek.js), így a kérdőív és a képtár fájlnevei nem csúszhatnak szét.
+export const COLORS = COLOR_CHIPS;
 
 // Inspirációs képek feltöltése
 export const IMAGES = { max: 5, edge: 1400, quality: 0.8, maxBytes: 900_000, totalBytes: 3_500_000 };

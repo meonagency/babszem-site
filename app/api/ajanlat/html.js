@@ -4,6 +4,7 @@ import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
 import { SECTIONS, ITEMS, GIFT_ITEMS, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
+import { fileColorKey, requestedColorKeys } from "../../szinek";
 
 const PER_SECTION = 4;
 
@@ -22,11 +23,13 @@ const SHAPES = ["kerekded", "modern"];
 export function parseName(name) {
   const base = norm(name).replace(IMAGE_RE, "");
   const parts = base.split(/[_\s]+/).filter(Boolean);
-  const cat = ["szezonalis", "premium"].includes(parts[0]) ? parts[0] : "";
+  const cat = ["szezonalis", "premium", "altalanos"].includes(parts[0]) ? parts[0] : "";
   const colorPart = cat ? parts[1] || "" : "";
   const numMatch = base.match(/(\d+)(?!.*\d)/);
   const shape = cat ? parts.slice(2).find((x) => SHAPES.includes(x)) || "" : "";
-  return { cat, colors: colorPart ? colorPart.split("-").filter(Boolean) : [], shape, num: numMatch ? Number(numMatch[1]) : 9999 };
+  // a színkódok a közös színtáblán át kulccsá alakulnak (pl. a régi "narancs" → "terrakotta")
+  const colors = colorPart ? [...new Set(colorPart.split("-").filter(Boolean).map(fileColorKey))] : [];
+  return { cat, colors, shape, num: numMatch ? Number(numMatch[1]) : 9999 };
 }
 
 const listOf = (v) =>
@@ -40,7 +43,9 @@ export function plan(offer, files, overrides = {}) {
   const prefer = new Set(listOf(overrides.prefer).map(norm));
   const skip = new Set(listOf(overrides.skip).map(norm));
   const cat = offer.flower_category === SEASONAL ? "szezonalis" : offer.flower_category === PREMIUM ? "premium" : "";
-  const colors = listOf(offer.colors).flatMap((c) => norm(c).split(/\s+/));
+  const colorList = listOf(offer.colors);
+  const colors = requestedColorKeys(colorList);
+  const wantsMixed = colorList.some((c) => norm(c) === "szines");
   const shape = SHAPES.includes(norm(offer.bouquet_shape)) ? norm(offer.bouquet_shape) : "";
 
   const images = (files || []).filter((f) => f && f.id && IMAGE_RE.test(f.name || "") && !skip.has(norm(f.name)));
@@ -52,7 +57,8 @@ export function plan(offer, files, overrides = {}) {
         let score = 0;
         if (prefer.has(norm(f.name))) score += 1000;
         if (cat && p.cat === cat) score += 10;
-        score += 3 * p.colors.filter((c) => colors.includes(c)).length;
+        score += 3 * p.colors.filter((c) => colors.has(c)).length;
+        if (wantsMixed && p.colors.length >= 3) score += 2; // "színes" kérés: kis bónusz a sokszínű képnek
         if (shape && p.shape) score += p.shape === shape ? 4 : -4; // forma nélküli kép semleges
         return { f, score, num: p.num };
       })
