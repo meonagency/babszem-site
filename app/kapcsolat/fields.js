@@ -29,8 +29,9 @@ export const SEASONAL = "Szezonális (hazai virágokkal)";
 export const PREMIUM = "Prémium";
 export const FLOWER_CATEGORIES = [SEASONAL, PREMIUM, "Még nem tudjuk"];
 
-// Csak inspiráció, nem választható – a virágműhelyünk a szezon kínálatából dolgozik
-export const SEASONAL_EXAMPLES = ["rózsa", "szegfű", "dália", "szellőrózsa", "rezgő", "tulipán", "eukaliptusz"];
+// Kedvenc virágok a szezonális kategóriához. Nem kötelező és nem kötelezettség: az aktuális szezon kínálatától függ,
+// hogy melyik érhető el. A lista a Képtár képein ténylegesen látható virágokra épül.
+export const FAVORITE_FLOWERS = ["rózsa", "dália", "szegfű", "liziantusz", "szarkaláb", "hortenzia", "gerbera"];
 
 // Ezeket meg kell rendelni, ezért itt van értelme a választásnak
 export const PREMIUM_FLOWERS = ["peónia", "hortenzia", "orchidea", "liliom", "boglárka", "szarkaláb", "kála"];

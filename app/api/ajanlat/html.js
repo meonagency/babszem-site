@@ -5,6 +5,7 @@ import { MARK, MARK_VIEWBOX } from "../../mark";
 import { SECTIONS, ITEMS, GIFT_ITEMS, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
 import { fileColorKey, requestedColorKeys } from "../../szinek";
+import { KEPCIMKEK } from "./kepcimkek";
 
 const PER_SECTION = 4;
 
@@ -46,6 +47,7 @@ export function plan(offer, files, overrides = {}) {
   const colorList = listOf(offer.colors);
   const colors = requestedColorKeys(colorList);
   const wantsMixed = colorList.some((c) => norm(c) === "szines");
+  const favorites = listOf(offer.favorite_flowers).map(norm);
   const shape = SHAPES.includes(norm(offer.bouquet_shape)) ? norm(offer.bouquet_shape) : "";
 
   const images = (files || []).filter((f) => f && f.id && IMAGE_RE.test(f.name || "") && !skip.has(norm(f.name)));
@@ -59,6 +61,10 @@ export function plan(offer, files, overrides = {}) {
         if (cat && p.cat === cat) score += 10;
         score += 3 * p.colors.filter((c) => colors.has(c)).length;
         if (wantsMixed && p.colors.length >= 3) score += 2; // "színes" kérés: kis bónusz a sokszínű képnek
+        if (favorites.length) { // kedvenc virág: kis plusz a címkézett képeknek (a rózsa/dália szinte mindenhol szerepel, ezért ez csak finom hangolás)
+          const tags = (KEPCIMKEK[folder]?.[f.name] || "").split(" ").map(norm);
+          score += 2 * favorites.filter((x) => tags.includes(x)).length;
+        }
         if (shape && p.shape) score += p.shape === shape ? 4 : -4; // forma nélküli kép semleges
         return { f, score, num: p.num };
       })
@@ -165,6 +171,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
     ["Asztalok", [offer.guest_tables ? `${esc(offer.guest_tables)} ${norm(offer.table_layout).startsWith("kerek") ? "kerek " : ""}asztal` : esc(offer.table_layout), offer.head_table ? `${esc(offer.head_table)} fős főasztal` : ""].filter(Boolean).join(", ")],
     ["Virágok", esc(offer.flower_category === SEASONAL ? "Szezonális, hazai virágokkal" : offer.flower_category)],
     ...(offer.premium_flowers ? [["Prémium virágok", esc(offer.premium_flowers)]] : []),
+    ...(offer.favorite_flowers ? [["Kedvenc virágok", esc(`${offer.favorite_flowers} (az aktuális szezon kínálatától függően)`)]] : []),
     ["Színvilág", esc(offer.colors)],
     ["Zöld levelek", esc(norm(offer.greenery) === "igen" ? "igen" : offer.greenery)],
     ...(offer.avoid_flowers ? [["Kérésetek", esc(offer.avoid_flowers)]] : []),

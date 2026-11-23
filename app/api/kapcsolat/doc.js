@@ -87,6 +87,7 @@ ${h2("Virágok")}
 ${table([
   ["Kategória", d.flower_category],
   ["Prémium virágok", d.premium_flowers],
+  ["Kedvenc virágok (a szezon kínálatától függően)", d.favorite_flowers],
   ["Színvilág", d.colors],
   ["Zöld levelek", d.greenery],
   ["Kerülendő virágok", d.avoid_flowers],

@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
-  PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
-  PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
+  PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
+  PREMIUM_FLOWERS, FAVORITE_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS, BOUQUET_ITEMS, BOUQUET_SHAPES,
   PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST,
 } from "../../kapcsolat/fields";
@@ -154,6 +154,8 @@ export async function POST(req) {
         greenery: oneOf(body.greenery, GREENERY),
         premium_flowers:
           body.flower_category === SEASONAL ? "" : manyOf(body.premium_flowers, PREMIUM_FLOWERS),
+        favorite_flowers:
+          body.flower_category === PREMIUM ? "" : manyOf(body.favorite_flowers, FAVORITE_FLOWERS),
         avoid_flowers: clean(body.avoid_flowers, 200),
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
         decor_points: decorList(body.decor_points, digits(body.bridesmaids)),
@@ -227,6 +229,7 @@ export async function POST(req) {
       church_address: payload.church_address,
       flower_category: payload.flower_category,
       premium_flowers: payload.premium_flowers,
+      favorite_flowers: payload.favorite_flowers,
       colors: payload.colors,
       greenery: payload.greenery,
       avoid_flowers: payload.avoid_flowers,

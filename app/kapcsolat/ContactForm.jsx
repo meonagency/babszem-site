@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
-  SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
+  FAVORITE_FLOWERS, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
   RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS, BOUQUET_ITEMS, BOUQUET_SHAPES,
   PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST, VELUMA_DIGITAL_URL,
 } from "./fields";
@@ -18,7 +18,7 @@ const INITIAL = {
   name: "", email: "", phone: "", event_date: "", location: "", message: "",
   consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
-  flower_category: "", premium_flowers: [], silk_rental: "", colors: [], greenery: "",
+  flower_category: "", premium_flowers: [], favorite_flowers: [], silk_rental: "", colors: [], greenery: "",
   avoid_flowers: "", decor_points: [], guest_tables: "", head_table: "",
   rental: "", gifts: [], pinterest: "", images: [], gift_type: "", bridesmaids: "", bouquet_shape: "",
   paper_help: "", paper_items: [], invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", digital_interest: "", veluma_consent: false,
@@ -341,10 +341,15 @@ export default function ContactForm() {
           />
           {f.flower_category !== PREMIUM && (
             <div className="cf-field">
-              <span className="cf-label">Jellemző szezonális virágok</span>
-              <span className="cf-hint">Csak ízelítő: a hazai szezonális virágokból a virágműhelyünk az aktuális kínálatból válogat a színvilágotokhoz.</span>
-              <div className="cf-inspo">
-                {SEASONAL_EXAMPLES.map((x) => <span key={x}>{x}</span>)}
+              <span className="cf-label">Kedvenc virág (nem kötelező)</span>
+              <span className="cf-hint">Ha van kedvenc virágotok, jelöljétek. Az aktuális szezonnak megfelelő virágokból válogatunk, ezért a jelölést figyelembe vesszük, de a szezon kínálatától függ, hogy melyik érhető el.</span>
+              <div className="cf-checks">
+                {FAVORITE_FLOWERS.map((x) => (
+                  <label key={x} className={`cf-check${f.favorite_flowers.includes(x) ? " on" : ""}`}>
+                    <input type="checkbox" checked={f.favorite_flowers.includes(x)} onChange={() => toggle("favorite_flowers", x)} />
+                    {x}
+                  </label>
+                ))}
               </div>
             </div>
           )}
