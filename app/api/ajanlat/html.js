@@ -355,7 +355,9 @@ ${sectionPages}
     </div>
   </div>
 </section>
-</body></html>`;
+<script>
+window.addEventListener("load",function(){try{var im=document.querySelector(".cover-img");if(!im)return;var c=document.createElement("canvas");c.width=c.height=16;var x=c.getContext("2d");x.drawImage(im,0,0,16,16);var d=x.getImageData(0,0,16,16).data,r=0,g=0,b=0,n=0;for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++}r/=n;g/=n;b/=n;var mx=Math.max(r,g,b)/255,mn=Math.min(r,g,b)/255,h=0,dl=mx-mn;if(dl>0){var R=r/255,G=g/255,B=b/255;h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4;h=h*60;if(h<0)h+=360}h=(h+180)%360;var s=Math.min(.32,Math.max(.14,dl*.6));document.querySelector(".cover").style.setProperty("--cd","hsl("+h.toFixed(0)+","+Math.round(s*100)+"%,12%)")}catch(e){}});
+</script></body></html>`;
 }
 
 /** Lábléc a Chrome PDF-hez (minden oldalon): érvényesség + oldalszám. */
@@ -368,6 +370,7 @@ export function footerHtml(validUntil) {
 const CSS = `
 @page { size: A4; margin: 16mm 18mm 20mm; }
 @page full { size: A4; margin: 0 0 20mm 0; }
+@page cover { size: A4; margin: 0; }
 :root { --gold:#cb8629; --gold-mid:#d9a35b; --gold-light:#e6c28f; --gold-deep:#a86d1f; --cream:#faf6ef; --line:#e4d9c7; --ink:#3a2c1e; --muted:#7a6a58; }
 * { box-sizing:border-box; margin:0; padding:0; }
 body { font-family:Jost,Arial,sans-serif; font-weight:300; font-size:9.6pt; line-height:1.55; color:var(--ink); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
@@ -381,11 +384,11 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .vg img { display:block; }
 /* egységes vignetta: a kép szélén legfeljebb 20% sötétítés, középen semmi */
 .vg::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 58%, rgba(30,20,10,.20) 100%); }
-/* címlap: a kép alja egyenletesen halványodva olvad a lapba, a logó és a cím ebből indul */
-.vg-cover::before { content:""; position:absolute; left:0; right:0; bottom:0; height:46mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, rgba(255,255,255,0), var(--paper, #fff)); }
+/* címlap: a kép alja lefelé egyenletesen sötétedik a háttérkép komplementer sötét tónusába, ami kitölti az oldal többi részét */
+.vg-cover::before { content:""; position:absolute; left:0; right:0; bottom:0; height:92mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, rgba(0,0,0,0), var(--cd)); }
 .mood-grid .m1 img { width:100%; height:160mm; object-fit:cover; }
 .mood-grid .vg.m1 { width:100%; }
-.cover { page:full; height:277mm; break-after:page; overflow:hidden; text-align:center; }
+.cover { --cd:#2a2118; background:var(--cd); page:cover; height:297mm; break-after:page; overflow:hidden; text-align:center; }
 .cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
 .cover-logo { margin-top:14mm; }
 .cover-logo img { height:17mm; }
@@ -393,7 +396,9 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .cover-logo .w2 { font-family:Cinzel,serif; font-size:7pt; letter-spacing:.52em; color:var(--gold-mid); margin-top:.5mm; }
 .cover-title { margin-top:12mm; }
 .cover-title h1 { font-size:30pt; margin:5mm 0 3mm; letter-spacing:.04em; }
-.cover-title .meta { font-size:9.6pt; color:var(--muted); letter-spacing:.14em; }
+.cover .cover-title h1 { color:#f6efe2; }
+.cover .cover-title .eyebrow { color:var(--gold-light); }
+.cover-title .meta { font-size:9.6pt; color:#cdbfa9; letter-spacing:.14em; }
 
 .letter { margin-top:2mm; }
 .letter p, .flow p { margin-bottom:2.6mm; }
