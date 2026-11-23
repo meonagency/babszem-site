@@ -3,7 +3,7 @@
 //  - token: ugyanaz a titok, mint a kapcsolat webhooknál (MAKE_WEBHOOK_TOKEN)
 //  - offer: az űrlap offer_json mezője (objektum vagy JSON szöveg)
 //  - files: Drive files.list eredmény (files tömb vagy a teljes válasz), mezők: id,name,parents,thumbnailLink
-//  - prices: { kiegeszitok, vacsora, szertartas, egyeb, ajandek, munkadij, uzemanyag, vegosszeg } – szöveges ársávok
+//  - prices: { kiegeszitok, vacsora, szertartas, egyeb, munkadij, uzemanyag, vegosszeg } – szöveges ársávok
 //    (űrlapnál ugyanezek a kulcsok külön mezőként)
 //  - prefer / skip: fájlnevek (vesszővel vagy soronként) – kézi képcsere a táblázatból
 //  - format: "pdf" (alap) vagy "html" (ellenőrzéshez)
@@ -100,7 +100,7 @@ export async function POST(req) {
 
   const filesIn = parse(body.files);
   const files = Array.isArray(filesIn) ? filesIn : Array.isArray(filesIn?.files) ? filesIn.files : [];
-  const PRICE_KEYS = ["kiegeszitok", "vacsora", "szertartas", "egyeb", "ajandek", "munkadij", "uzemanyag", "vegosszeg"];
+  const PRICE_KEYS = ["kiegeszitok", "vacsora", "szertartas", "egyeb", "munkadij", "uzemanyag", "vegosszeg"];
   const prices = parse(body.prices) || Object.fromEntries(PRICE_KEYS.map((k) => [k, String(body[k] ?? "").trim()]));
   const validUntil = String(body.valid_until || "").trim() || budapestPlusDays(14);
 

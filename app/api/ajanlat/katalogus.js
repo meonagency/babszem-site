@@ -12,7 +12,6 @@ export const SECTIONS = [
   { key: "vacsora", title: "Vacsora helyszín", group: "Vacsora helyszín" },
   { key: "szertartas", title: "Szertartás", group: "Szertartás" },
   { key: "egyeb", title: "Egyéb dekorációs pontok", group: "Egyéb dekorációs pontok" },
-  { key: "ajandek", title: "Köszönőajándék", group: "Köszönőajándék" },
 ];
 
 /** Upsell blokk ("Egyéb ajánlat – külön megrendelésre"). A szövegek VÁZLATOK, a végleges szöveg később készül. */
@@ -28,7 +27,6 @@ export const UPSELL = {
   intro: "Ha a megrendelés mellé még szeretnétek, ezeket külön is elkészítjük.",
 };
 
-export const GIFT_ITEMS = ["Szülőköszöntő", "Vendégajándék"];
 
 // tétel → { folder: képtár-mappa ID, label: megjelenő név, text: leírás }
 export const ITEMS = {

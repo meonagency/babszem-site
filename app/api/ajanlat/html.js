@@ -4,7 +4,7 @@ import { megszolitas } from "./megszolitas.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
-import { SECTIONS, ITEMS, GIFT_ITEMS, UPSELL, KIEMELT, KIEMELT_OLDALRA, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
+import { SECTIONS, ITEMS, UPSELL, KIEMELT, KIEMELT_OLDALRA, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
 import { fileColorKey, requestedColorKeys } from "../../szinek";
 import { KEPCIMKEK } from "./kepcimkek";
@@ -81,7 +81,6 @@ export function plan(offer, files, overrides = {}) {
       .map((x) => x.f);
 
   const picked = new Set(listOf(offer.decor_points));
-  const gifts = new Set(listOf(offer.gifts));
   const bridesmaids = String(offer.bridesmaids ?? "").replace(/\D/g, "");
 
   // a dokumentumban egy kép (fájl-azonosító) csak egyszer szerepelhet: a borító és az összes szekció közös "used" halmazt használ
@@ -104,11 +103,8 @@ export function plan(offer, files, overrides = {}) {
   for (const f of featuredRank) { if (featured.length >= 4) break; featured.push(f); used.add(f.id); }
   const mood = featured.length ? { hero: featured[0], collage: featured.length >= 4 ? featured.slice(1, 4) : [] } : null;
 
-  const sections = SECTIONS.filter((s) => s.key !== "ajandek").map((s) => {
-    const names =
-      s.key === "ajandek"
-        ? GIFT_ITEMS.filter((g) => gifts.has(g))
-        : (DECOR_GROUPS.find((g) => g.title === s.group)?.items || []).filter((i) => picked.has(i));
+  const sections = SECTIONS.map((s) => {
+    const names = (DECOR_GROUPS.find((g) => g.title === s.group)?.items || []).filter((i) => picked.has(i));
     if (!names.length) return null;
     const items = names.map((n) => {
       const def = ITEMS[n] || {};
