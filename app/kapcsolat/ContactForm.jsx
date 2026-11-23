@@ -15,7 +15,7 @@ import { LocationInput, TagPicker, ImageUpload } from "./inputs";
 
 const INITIAL = {
   interest: "",
-  name: "", name_bride: "", name_groom: "", email: "", phone: "", event_date: "", location: "", message: "",
+  name: "", name_1: "", name_2: "", email: "", phone: "", event_date: "", location: "", message: "",
   consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
   flower_category: "", premium_flowers: [], favorite_flowers: [], silk_rental: "", colors: [], greenery: "",
@@ -123,8 +123,7 @@ export default function ContactForm() {
     }
     if (s === contactStep) {
       if (isWedding) {
-        if (f.name_bride.trim().length < 2) e.name_bride = "Kérjük, add meg a menyasszony keresztnevét.";
-        if (f.name_groom.trim().length < 2) e.name_groom = "Kérjük, add meg a vőlegény keresztnevét.";
+        if (f.name_1.trim().length < 2 || f.name_2.trim().length < 2) e.names = "Kérjük, adjátok meg mindkét keresztnevet.";
       } else if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
       if (!EMAIL_RE.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
       if (f.phone && formatPhone(f.phone) === null) e.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
@@ -544,16 +543,17 @@ function Contact({ f, set, put, errors, suggestion, wedding }) {
   return (
     <>
       {wedding ? (
-        <fieldset className="cf-names">
-          <legend className="cf-label">Hogyan szólíthatunk Titeket?<em aria-hidden="true"> *</em></legend>
+        <fieldset className={`cf-names${errors.names ? " err" : ""}`}>
+          <legend className="cf-label">Keresztnevetek<em aria-hidden="true"> *</em></legend>
           <div className="cf-row">
-            <Field label="Menyasszony keresztneve" error={errors.name_bride} required>
-              <input value={f.name_bride} onChange={set("name_bride")} autoComplete="given-name" maxLength={40} />
-            </Field>
-            <Field label="Vőlegény keresztneve" error={errors.name_groom} required>
-              <input value={f.name_groom} onChange={set("name_groom")} autoComplete="off" maxLength={40} />
-            </Field>
+            <div className="cf-field">
+              <input aria-label="Első keresztnév" value={f.name_1} onChange={set("name_1")} autoComplete="given-name" maxLength={40} />
+            </div>
+            <div className="cf-field">
+              <input aria-label="Második keresztnév" value={f.name_2} onChange={set("name_2")} autoComplete="off" maxLength={40} />
+            </div>
           </div>
+          {errors.names && <span className="cf-error" role="alert">{errors.names}</span>}
         </fieldset>
       ) : (
         <Field label="Neved" error={errors.name} required>

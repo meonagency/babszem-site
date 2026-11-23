@@ -290,7 +290,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 <section class="flow letterpage">
   ${runHead}
   <div class="letter">
-    <p class="salute">${esc(megszolitas(offer.name, offer.name_bride, offer.name_groom))}</p>
+    <p class="salute">${esc(megszolitas(offer.name, offer.name_1, offer.name_2))}</p>
     ${TEXTS.intro.map((p) => `<p>${esc(p)}</p>`).join("")}
     <p class="note">${esc(TEXTS.disclaimer)}</p>
   </div>
