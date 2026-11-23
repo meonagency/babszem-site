@@ -277,13 +277,13 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 <style>${fonts()}${CSS}</style></head><body>
 
 <section class="cover">
-  <div class="vg vg-cover"><img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt=""></div>
   <div class="cover-logo"><img src="${LOGO_FEHER_URI()}" alt="Babszem Virágműhely"></div>
   <div class="cover-title">
     <div class="eyebrow">ESKÜVŐI DEKORÁCIÓS AJÁNLAT</div>
     <h1>${esc(name)}</h1>
     <div class="meta">${route}</div>
   </div>
+  <div class="vg vg-cover"><img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt=""></div>
 </section>
 
 <section class="flow letterpage">
@@ -374,8 +374,8 @@ window.addEventListener("load",function(){
     x.save();var fx=w*.5,fy=h*.52;x.translate(w*.5,h*.48);x.scale(fx*Math.SQRT2,fy*Math.SQRT2);
     var rg=x.createRadialGradient(0,0,0,0,0,1);rg.addColorStop(.58,"rgba(30,20,10,0)");rg.addColorStop(1,"rgba(30,20,10,.2)");
     x.fillStyle=rg;x.fillRect(-2,-2,4,4);x.restore();
-    if(box.classList.contains("vg-cover")){var gh=92*MM*Q,lg=x.createLinearGradient(0,h-gh,0,h);
-      lg.addColorStop(0,"rgba("+cd.join(",")+",0)");lg.addColorStop(1,"rgb("+cd.join(",")+")");x.fillStyle=lg;x.fillRect(0,h-gh,w,gh)}
+    if(box.classList.contains("vg-cover")){var gh=92*MM*Q,lg=x.createLinearGradient(0,0,0,gh);
+      lg.addColorStop(0,"rgb("+cd.join(",")+")");lg.addColorStop(1,"rgba("+cd.join(",")+",0)");x.fillStyle=lg;x.fillRect(0,0,w,gh)}
     var url=c.toDataURL("image/jpeg",.92);
     im.style.objectFit="fill";im.src=url;box.classList.add("flat");
   }catch(e){}});
@@ -409,14 +409,15 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .vg::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 58%, rgba(30,20,10,.20) 100%); }
 /* címlap: a kép alja lefelé egyenletesen sötétedik a háttérkép komplementer sötét tónusába, ami kitölti az oldal többi részét */
 .vg.flat::before, .vg.flat::after { display:none; }
-.vg-cover::before { content:""; position:absolute; left:0; right:0; bottom:0; height:92mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, rgba(0,0,0,0), var(--cd)); }
+.vg-cover::before { content:""; position:absolute; left:0; right:0; top:0; height:92mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, var(--cd), rgba(0,0,0,0)); }
 .mood-grid .m1 img { width:100%; height:160mm; object-fit:cover; }
 .mood-grid .vg.m1 { width:100%; }
-.cover { --cd:#2a2118; background:var(--cd); page:cover; height:297mm; break-after:page; overflow:hidden; text-align:center; }
+.cover { --cd:#2a2118; background:var(--cd); page:cover; height:297mm; box-sizing:border-box; padding-bottom:20mm; display:flex; flex-direction:column; align-items:center; break-after:page; overflow:hidden; text-align:center; }
+.cover .vg-cover { margin-top:auto; flex:none; }
 .cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
-.cover-logo { margin-top:14mm; }
+.cover-logo { margin-top:20mm; }
 .cover-logo img { width:40mm; height:auto; }
-.cover-title { margin-top:12mm; }
+.cover-title { margin-top:12mm; margin-bottom:10mm; }
 .cover-title h1 { font-size:30pt; margin:5mm 0 3mm; letter-spacing:.04em; }
 .cover .cover-title h1 { color:#f6efe2; }
 .cover .cover-title .eyebrow { color:var(--gold-light); }
