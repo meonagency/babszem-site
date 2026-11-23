@@ -1,5 +1,6 @@
 // Ajánlat: képválogatás a képtárból + HTML az elfogadott sablon (v1) szerint.
 import { LOGO_FEHER_SVG } from "./logo-feher.js";
+import { megszolitas } from "./megszolitas.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
@@ -289,7 +290,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 <section class="flow letterpage">
   ${runHead}
   <div class="letter">
-    <p class="salute">Kedves Jegyesek!</p>
+    <p class="salute">${esc(megszolitas(offer.name))}</p>
     ${TEXTS.intro.map((p) => `<p>${esc(p)}</p>`).join("")}
     <p class="note">${esc(TEXTS.disclaimer)}</p>
   </div>
