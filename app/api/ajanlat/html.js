@@ -415,7 +415,7 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .cover { --cd:#2a2118; background:var(--cd); page:cover; height:297mm; break-after:page; overflow:hidden; text-align:center; }
 .cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
 .cover-logo { margin-top:14mm; }
-.cover-logo img { width:54mm; height:auto; }
+.cover-logo img { width:40mm; height:auto; }
 .cover-title { margin-top:12mm; }
 .cover-title h1 { font-size:30pt; margin:5mm 0 3mm; letter-spacing:.04em; }
 .cover .cover-title h1 { color:#f6efe2; }
