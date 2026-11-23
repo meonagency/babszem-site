@@ -1,4 +1,5 @@
 // Ajánlat: képválogatás a képtárból + HTML az elfogadott sablon (v1) szerint.
+import { LOGO_FEHER_SVG } from "./logo-feher.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
@@ -191,6 +192,7 @@ const markSvg = (mono) =>
   ).join("")}</svg>`;
 const svgUri = (svg) => `data:image/svg+xml;base64,${Buffer.from(svg).toString("base64")}`;
 const MARK_URI = () => svgUri(markSvg());
+const LOGO_FEHER_URI = () => svgUri(LOGO_FEHER_SVG);
 
 /** Arculati helykitöltő (ha a képtárban még nincs kép az elemhez). */
 function placeholder(label, wide = false) {
@@ -276,7 +278,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 
 <section class="cover">
   <div class="vg vg-cover"><img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt=""></div>
-  <div class="cover-logo"><img src="${MARK_URI()}" alt=""><div class="w1">BABSZEM</div><div class="w2">VIRÁGMŰHELY</div></div>
+  <div class="cover-logo"><img src="${LOGO_FEHER_URI()}" alt="Babszem Virágműhely"></div>
   <div class="cover-title">
     <div class="eyebrow">ESKÜVŐI DEKORÁCIÓS AJÁNLAT</div>
     <h1>${esc(name)}</h1>
@@ -413,9 +415,7 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .cover { --cd:#2a2118; background:var(--cd); page:cover; height:297mm; break-after:page; overflow:hidden; text-align:center; }
 .cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
 .cover-logo { margin-top:14mm; }
-.cover-logo img { height:17mm; }
-.cover-logo .w1 { font-family:Cinzel,serif; font-size:14pt; letter-spacing:.3em; color:var(--gold); margin-top:2.5mm; }
-.cover-logo .w2 { font-family:Cinzel,serif; font-size:7pt; letter-spacing:.52em; color:var(--gold-mid); margin-top:.5mm; }
+.cover-logo img { width:54mm; height:auto; }
 .cover-title { margin-top:12mm; }
 .cover-title h1 { font-size:30pt; margin:5mm 0 3mm; letter-spacing:.04em; }
 .cover .cover-title h1 { color:#f6efe2; }
