@@ -15,6 +15,18 @@ export const SECTIONS = [
   { key: "ajandek", title: "Köszönőajándék", group: "Köszönőajándék" },
 ];
 
+/** Upsell blokk ("Egyéb ajánlat – külön megrendelésre"). A szövegek VÁZLATOK, a végleges szöveg később készül. */
+export const UPSELL = {
+  accessory: {
+    csuklo: { label: "Csuklódísz", folder: "13GnSQ0WfCgoyuNMlmrVM-XAP00dKnYIE", text: "A menyasszonyi csokor virágaival készül." },
+    haj: { label: "Hajdísz", folder: "1kWYv8Ut0qKedqHGEjfjwoY4RJhATeslb", text: "A menyasszonyi csokorhoz illő virágokból készül." },
+  },
+  parents: { label: "Szülőköszöntő", folder: "1GuCcOAQWyxoiMx2DmLUIjH4dDeMFfpZ-", text: "A formáját és a virágokat a konzultáción választjuk ki." },
+  bridesmaids: { label: "Koszorúslányok, -fiúk díszei", folder: "1cK1QBo6orX_0B7IbGBPEKj4LELPHqfAO", text: "Koszorúslánycsokor, csuklódísz vagy fiolában készített kitűző." },
+  title: "Egyéb ajánlat – külön megrendelésre",
+  intro: "Ha a megrendelés mellé még szeretnétek, ezeket külön is elkészítjük.",
+};
+
 export const GIFT_ITEMS = ["Szülőköszöntő", "Vendégajándék"];
 
 // tétel → { folder: képtár-mappa ID, label: megjelenő név, text: leírás }

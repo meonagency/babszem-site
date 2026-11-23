@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
-import { SECTIONS, ITEMS, GIFT_ITEMS, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
+import { SECTIONS, ITEMS, GIFT_ITEMS, UPSELL, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
 import { fileColorKey, requestedColorKeys } from "../../szinek";
 import { KEPCIMKEK } from "./kepcimkek";
@@ -120,7 +120,25 @@ export function plan(offer, files, overrides = {}) {
     return { ...s, items: items.map(({ pool, ...rest }) => rest), images: imgs };
   }).filter(Boolean);
 
-  return { cover, sections };
+  // Upsell: mindig kiegészítő (csuklódísz, ha nem kérték, különben hajdísz) + szülőköszöntő; koszorúslány-dísz csak ha nem kérték.
+  // Pontosan 3 kép: tételenként körbe-körbe, a közös "used" halmazzal.
+  const wantsWrist = picked.has("Csuklódísz");
+  const upItems = [
+    wantsWrist ? UPSELL.accessory.haj : UPSELL.accessory.csuklo,
+    UPSELL.parents,
+    ...(picked.has("Koszorúslányok / -fiúk díszei") ? [] : [UPSELL.bridesmaids]),
+  ].map((u) => ({ ...u, pool: ranked(u.folder) }));
+  const upImages = [];
+  for (let round = 0; upImages.length < 3 && round < 3; round++)
+    for (const it of upItems) {
+      if (upImages.length >= 3) break;
+      const next = it.pool.find((f) => !used.has(f.id));
+      if (next) { used.add(next.id); upImages.push({ file: next, label: it.label }); }
+    }
+  for (let i = 0; upImages.length < 3; i++) upImages.push({ file: null, label: upItems[i % upItems.length].label });
+  const upsell = { items: upItems.map(({ pool, folder, ...rest }) => rest), images: upImages };
+
+  return { cover, sections, upsell };
 }
 
 // ---------- megjelenítés ----------
@@ -261,7 +279,15 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
     <ul class="dots">${TEXTS.about.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
   </div>
 
-  <div class="box keep" style="margin-top:6mm"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
+  <div class="upsell">
+    <h2 class="sec">${esc(UPSELL.title)}</h2>
+    <p style="margin:2mm 0 4mm">${esc(UPSELL.intro)}</p>
+    <table class="items">${planned.upsell.items.map((it) => `<tr><td class="n">${esc(it.label)}</td><td>${esc(it.text)}</td></tr>`).join("")}</table>
+    <table class="gallery up">${`<tr>${planned.upsell.images.map((x) => `<td><img src="${img(x.file, x.label)}" alt=""></td>`).join("")}</tr>`}</table>
+  </div>
+
+  <div class="last">
+  <div class="box" style="margin-top:0"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
 
   <div class="keep" style="margin-top:6mm">
     <h2 class="sec" style="margin-bottom:2mm">Hogyan tovább?</h2>
@@ -273,6 +299,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
       <div class="small">Babszem Virágműhely</div>
       <div class="contact">${CONTACT.phone} &nbsp;·&nbsp; ${CONTACT.email} &nbsp;·&nbsp; ${CONTACT.web} &nbsp;·&nbsp; ${CONTACT.ig}</div>
     </div>
+  </div>
   </div>
 </section>
 </body></html>`;
@@ -294,6 +321,9 @@ body { font-family:Jost,Arial,sans-serif; font-size:9.6pt; line-height:1.5; colo
 h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .eyebrow { font-family:Cinzel,serif; font-size:8.5pt; letter-spacing:.32em; color:var(--gold-deep); }
 .cover { break-after:page; }
+.upsell { break-before:page; break-inside:avoid; }
+.last { break-before:page; break-inside:avoid; }
+.gallery.up img { aspect-ratio:4/5; }
 .cover-logo { text-align:center; }
 .cover-logo img { height:21mm; }
 .cover-logo .w1 { font-family:Cinzel,serif; font-size:15pt; letter-spacing:.3em; color:var(--gold); margin-top:2.5mm; }
