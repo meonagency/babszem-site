@@ -60,6 +60,7 @@ export function plan(offer, files, overrides = {}) {
   const ranked = (folder) =>
     images
       .filter((f) => (f.parents || []).includes(folder))
+      .filter((f) => cat === "premium" || parseName(f.name).cat !== "premium") // prémium képet csak prémium kérésnél mutatunk (árvárakozás); a prémium kérés a szezonális és általános képekre tartalékként támaszkodhat
       .map((f) => {
         const p = parseName(f.name);
         const tags = (KEPCIMKEK[folder]?.[f.name] || "").split(" ").map(norm).filter(Boolean);
