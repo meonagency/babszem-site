@@ -112,6 +112,40 @@ export const ITEMS = {
 };
 
 // Az összes képtár-mappa, amelyet a Make egy Drive API hívással listáz (q: '<id>' in parents or …)
+/** Kézzel válogatott, vizuálisan kiemelkedő képek (tétel → fájlnév a tétel mappájában): a "hangulatoldal" készletei.
+ *  A kulcs a tétel neve (ITEMS), "Borító" a borító mappa, "Hajdísz" az upsell mappa. */
+export const KIEMELT = {
+  "Menyasszonyi csokor": "szezonalis_feher-krem-zold_modern_07.jpg",
+  "Dobócsokor": "szezonalis_narancs-terrakotta_modern_02.heic",
+  "Koszorúslányok / -fiúk díszei": "altalanos_rozsaszin-barack-krem_kerekded_21.jpg",
+  "Kitűző": "altalanos_krem-puder-feher_02.jpg",
+  "Csuklódísz": "altalanos_bordo-krem-feher_01.jpg",
+  "Hajdísz": "altalanos_rozsaszin-barack-lila_31.jpg",
+  "Vendégasztalok": "szezonalis_bordo-puder-feher_03.jpg",
+  "Főasztal": "szezonalis_bordo-zold-krem_04.jpg",
+  "Háttérfal": "szezonalis_feher-rozsaszin-bordo_01.jpg",
+  "Boldogságkapu dekorációja": "szezonalis_rozsaszin-lila-feher-barack_09.jpg",
+  "Odavezető út (szalagok a székek oldalán)": "altalanos_piros-feher-zold_01.jpg",
+  "Székek dekorációja kis virágcsokorral": "altalanos_piros-feher-bordo_04.jpg",
+  "Nagyobb virágos dekorációk (földön vagy állványon)": "szezonalis_kek-rozsaszin-feher_23.jpg",
+  "Egyéb szertartásdekoráció": "szezonalis_rozsaszin-kek-lila-barack_23.heic",
+  "Templomi dekoráció": "altalanos_feher-zold_01.jpg",
+  "Tábla és tábladekoráció": "altalanos_barna-feher-zold_01.jpg",
+  "Megemlékező pont": "altalanos_feher_01.heic",
+  "Tükör": "altalanos_arany-feher-barna_01.jpg",
+  "Tükör (virágdísszel)": "altalanos_feher-zold_21.jpg",
+  "Autódekoráció": "altalanos_puder-feher-zold_01.jpg",
+  "Vendégajándék": "altalanos_zold_21.jpg",
+  "Szülőköszöntő": "altalanos_feher-sarga_01.jpg",
+  "Borító": "szezonalis_rozsaszin-narancs_05.jpg",
+};
+/** Teljes oldalra csak ezek a tételek alkalmasak (a kisebb tárgyak, pl. kitűző, tükör, megemlékező pont nem). */
+export const KIEMELT_OLDALRA = [
+  "Menyasszonyi csokor", "Dobócsokor", "Koszorúslányok / -fiúk díszei", "Vendégasztalok", "Főasztal", "Háttérfal",
+  "Boldogságkapu dekorációja", "Odavezető út (szalagok a székek oldalán)", "Nagyobb virágos dekorációk (földön vagy állványon)",
+  "Egyéb szertartásdekoráció", "Templomi dekoráció", "Borító",
+];
+
 export const ALL_FOLDERS = [...new Set([BORITO_FOLDER, ...Object.values(ITEMS).map((i) => i.folder)])];
 
 export const TEXTS = {

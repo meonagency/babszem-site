@@ -105,7 +105,7 @@ export async function POST(req) {
   const validUntil = String(body.valid_until || "").trim() || budapestPlusDays(14);
 
   const planned = plan(offer, files, { prefer: body.prefer, skip: body.skip });
-  const wanted = [planned.cover, ...planned.sections.flatMap((s) => s.images.map((x) => x.file)), ...planned.upsell.images.map((x) => x.file)].filter(Boolean);
+  const wanted = [planned.cover, ...planned.sections.flatMap((s) => s.images.map((x) => x.file)), ...planned.upsell.images.map((x) => x.file), ...(planned.mood ? [planned.mood.hero, ...planned.mood.collage] : [])].filter(Boolean);
   const unique = [...new Map(wanted.map((f) => [f.id, f])).values()];
   const thumbs = await Promise.all(unique.map(fetchThumb));
   const imgs = Object.fromEntries(unique.map((f, i) => [f.id, thumbs[i]]).filter(([, v]) => v));

@@ -2,7 +2,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
-import { SECTIONS, ITEMS, GIFT_ITEMS, UPSELL, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
+import { SECTIONS, ITEMS, GIFT_ITEMS, UPSELL, KIEMELT, KIEMELT_OLDALRA, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
 import { fileColorKey, requestedColorKeys } from "../../szinek";
 import { KEPCIMKEK } from "./kepcimkek";
@@ -88,6 +88,20 @@ export function plan(offer, files, overrides = {}) {
   const cover = coverPool[0] || null;
   if (cover) used.add(cover.id);
 
+  // Hangulatoldal(ak): a kézzel válogatott képekből a szín > kedvenc virág > forma pontozás szerinti legjobbak.
+  // 1. oldal: egy nagy kép; 2. oldal: 3 képes kollázs, csak ha van elég kép (különben elmarad, helykitöltő nincs).
+  const featuredFiles = [...new Set(KIEMELT_OLDALRA)].flatMap((item) => {
+    const folder = item === "Borító" ? BORITO_FOLDER : ITEMS[item]?.folder;
+    const name = KIEMELT[item];
+    if (!folder || !name) return [];
+    const f = images.find((x) => x.name === name && (x.parents || []).includes(folder));
+    return f ? [f] : [];
+  });
+  const featuredRank = ranked([...new Set(featuredFiles.flatMap((f) => f.parents || []))]).filter((f) => featuredFiles.some((k) => k.id === f.id) && !used.has(f.id));
+  const featured = [];
+  for (const f of featuredRank) { if (featured.length >= 4) break; featured.push(f); used.add(f.id); }
+  const mood = featured.length ? { hero: featured[0], collage: featured.length >= 4 ? featured.slice(1, 4) : [] } : null;
+
   const sections = SECTIONS.map((s) => {
     const names =
       s.key === "ajandek"
@@ -138,7 +152,7 @@ export function plan(offer, files, overrides = {}) {
   for (let i = 0; upImages.length < 3; i++) upImages.push({ file: null, label: upItems[i % upItems.length].label });
   const upsell = { items: upItems.map(({ pool, folder, ...rest }) => rest), images: upImages };
 
-  return { cover, sections, upsell };
+  return { cover, sections, upsell, mood };
 }
 
 // ---------- megjelenítés ----------
@@ -254,6 +268,16 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
   <div class="box"><h3>ONLINE KONZULTÁCIÓ</h3><p>${esc(TEXTS.consult)}</p></div>
 </section>
 
+${
+  planned.mood
+    ? `<section class="mood"><img class="mood-hero" src="${img(planned.mood.hero, "Hangulatkép", true)}" alt=""><div class="mood-cap">${esc(name)}</div></section>
+${
+  planned.mood.collage.length
+    ? `<section class="mood"><div class="mood-grid"><img class="m1" src="${img(planned.mood.collage[0], "", true)}" alt=""><img class="m2" src="${img(planned.mood.collage[1], "")}" alt=""><img class="m3" src="${img(planned.mood.collage[2], "")}" alt=""></div></section>`
+    : ""
+}`
+    : ""
+}
 <section class="body">
   <div class="hd"><div class="l"><img src="${MARK_URI()}" alt="">BABSZEM VIRÁGMŰHELY</div><div class="r">${esc(name)} &nbsp;·&nbsp; ${huShort(offer.event_date)}</div></div>
   <h2 class="sec">Az esküvőtök</h2>
@@ -320,6 +344,14 @@ body { font-family:Jost,Arial,sans-serif; font-size:9.6pt; line-height:1.5; colo
 h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .eyebrow { font-family:Cinzel,serif; font-size:8.5pt; letter-spacing:.32em; color:var(--gold-deep); }
 .cover { break-after:page; }
+@page mood { size: A4; margin: 0 0 20mm 0; }
+.mood { page:mood; height:277mm; break-after:page; overflow:hidden; }
+.mood-hero { display:block; width:210mm; height:240mm; object-fit:cover; }
+.mood-cap { margin-top:9mm; text-align:center; font-family:Cinzel,serif; font-size:8pt; letter-spacing:.34em; color:var(--gold-deep); text-transform:uppercase; }
+.mood-grid { display:grid; grid-template-columns:1fr 1fr; gap:3mm; width:210mm; }
+.mood-grid img { display:block; width:100%; object-fit:cover; }
+.mood-grid .m1 { grid-column:1 / 3; height:160mm; }
+.mood-grid .m2, .mood-grid .m3 { height:114mm; }
 .upsell { break-before:page; break-inside:avoid; }
 .last { break-before:page; break-inside:avoid; }
 .gallery.up img { aspect-ratio:4/5; }
