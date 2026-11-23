@@ -134,15 +134,30 @@ export function plan(offer, files, overrides = {}) {
     return { ...s, items: items.map(({ pool, ...rest }) => rest), images: imgs };
   }).filter(Boolean);
 
-  // Upsell: mindig kiegészítő (csuklódísz, ha nem kérték, különben hajdísz) + szülőköszöntő; koszorúslány-dísz csak ha nem kérték.
-  // Pontosan 3 kép: tételenként körbe-körbe, a közös "used" halmazzal.
-  const wantsWrist = picked.has("Csuklódísz");
+  // Upsell ("Egyéb ajánlat – külön megrendelésre"): 1 kiegészítő (csuklódísz / hajdísz / autódekoráció, amit nem kértek és van hozzá kép),
+  // a szülőköszöntő, és a koszorúslány-dísz, ha nem kérték (különben egy második kiegészítő).
+  // Változatosság: az ajánlat azonosítójából képzett magból (stabil: újragenerálásnál ugyanaz) forgatjuk a kiegészítőt és a képet a legjobb 3 közül.
+  const seed = ([...String(offer.id || offer.name || "")].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261) >>> 8);
+  const accessories = Object.values(UPSELL.accessory)
+    .filter((u) => !(u.requested && picked.has(u.requested)))
+    .map((u) => ({ ...u, pool: ranked(u.folder) }))
+    .filter((u) => u.pool.length); // kép nélküli tétel nem kerül be (nincs helykitöltő)
+  const pick = (i, n) => (Math.imul(seed + i * 7919, 2654435761) >>> 16) % n; // tételenként külön, egymástól független választás
+  const rot = accessories.length ? pick(0, accessories.length) : 0;
+  const accessoryPicks = accessories.map((_, i) => accessories[(rot + i) % accessories.length]);
+  const bridesmaidsRequested = picked.has("Koszorúslányok / -fiúk díszei");
   const upItems = [
-    wantsWrist ? UPSELL.accessory.haj : UPSELL.accessory.csuklo,
-    UPSELL.parents,
-    ...(picked.has("Koszorúslányok / -fiúk díszei") ? [] : [UPSELL.bridesmaids]),
-  ].map((u) => ({ ...u, pool: ranked(u.folder) }));
+    ...accessoryPicks.slice(0, 1),
+    { ...UPSELL.parents, pool: ranked(UPSELL.parents.folder) },
+    ...(bridesmaidsRequested ? accessoryPicks.slice(1, 2) : [{ ...UPSELL.bridesmaids, pool: ranked(UPSELL.bridesmaids.folder) }]),
+  ];
   const upImages = [];
+  upItems.forEach((it, i) => {
+    const cands = it.pool.filter((f) => !used.has(f.id)).slice(0, 3);
+    const next = cands.length ? cands[pick(i + 1, cands.length)] : null;
+    if (next) { used.add(next.id); upImages.push({ file: next, label: it.label }); }
+  });
+  // 3. kép: ha egy tételnek nincs képe, a többi tételből egy további
   for (let round = 0; upImages.length < 3 && round < 3; round++)
     for (const it of upItems) {
       if (upImages.length >= 3) break;
@@ -150,7 +165,7 @@ export function plan(offer, files, overrides = {}) {
       if (next) { used.add(next.id); upImages.push({ file: next, label: it.label }); }
     }
   for (let i = 0; upImages.length < 3; i++) upImages.push({ file: null, label: upItems[i % upItems.length].label });
-  const upsell = { items: upItems.map(({ pool, folder, ...rest }) => rest), images: upImages };
+  const upsell = { items: upItems.map(({ pool, folder, requested, ...rest }) => rest), images: upImages };
 
   return { cover, sections, upsell, mood };
 }

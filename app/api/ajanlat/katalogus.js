@@ -18,8 +18,9 @@ export const SECTIONS = [
 /** Upsell blokk ("Egyéb ajánlat – külön megrendelésre"). A szövegek VÁZLATOK, a végleges szöveg később készül. */
 export const UPSELL = {
   accessory: {
-    csuklo: { label: "Csuklódísz", folder: "13GnSQ0WfCgoyuNMlmrVM-XAP00dKnYIE", text: "A menyasszonyi csokor virágaival készül." },
+    csuklo: { label: "Csuklódísz", requested: "Csuklódísz", folder: "13GnSQ0WfCgoyuNMlmrVM-XAP00dKnYIE", text: "A menyasszonyi csokor virágaival készül." },
     haj: { label: "Hajdísz", folder: "1kWYv8Ut0qKedqHGEjfjwoY4RJhATeslb", text: "A menyasszonyi csokorhoz illő virágokból készül." },
+    auto: { label: "Autódekoráció", folder: "1yC2S_GJnLUgLAGPa6cyJd1R55J_XXpAG", text: "Szalagok a visszapillantókra, speciális tartóba rögzített dísz a motorháztetőre.", requested: "Autódekoráció" },
   },
   parents: { label: "Szülőköszöntő", folder: "1GuCcOAQWyxoiMx2DmLUIjH4dDeMFfpZ-", text: "A formáját és a virágokat a konzultáción választjuk ki." },
   bridesmaids: { label: "Koszorúslányok, -fiúk díszei", folder: "1cK1QBo6orX_0B7IbGBPEKj4LELPHqfAO", text: "Koszorúslánycsokor, csuklódísz vagy fiolában készített kitűző." },
