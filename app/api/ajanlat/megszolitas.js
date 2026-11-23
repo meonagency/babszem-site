@@ -21,7 +21,11 @@ export function keresztnevek(nev) {
   return reszek.map((r) => r.split(/\s+/).pop().replace(/[^\p{L}-]/gu, ""));
 }
 
-export function megszolitas(nev) {
+export function megszolitas(nev, menyasszony, vofeny) {
+  // az űrlap két kötelező keresztnevet kér (menyasszony, vőlegény): ez a pontos forrás
+  const m = String(menyasszony || "").trim(), v = String(vofeny || "").trim();
+  if (m && v) return `Kedves ${m} és ${v}!`;
+  // régebbi beküldéseknél a közös névmezőből, névlista alapján
   const nevek = keresztnevek(nev);
   if (nevek.length !== 2 || nevek.some((n) => !n)) return "Kedves Jegyespár!";
   let [a, b] = nevek;

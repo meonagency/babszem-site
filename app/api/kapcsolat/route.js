@@ -101,9 +101,12 @@ export async function POST(req) {
 
   const message = cleanLong(body.message);
 
+  // Esküvőnél két kötelező keresztnév (menyasszony, vőlegény); a közös név ezekből áll össze
+  const nameBride = isWedding ? clean(body.name_bride, 40) : "";
+  const nameGroom = isWedding ? clean(body.name_groom, 40) : "";
   const data = {
     interest,
-    name: clean(body.name, 120),
+    name: isWedding ? `${nameBride} és ${nameGroom}` : clean(body.name, 120),
     email: clean(body.email, 160).toLowerCase(),
     phone: clean(body.phone, 40) ? formatPhone(clean(body.phone, 40)) : "",
     event_date: clean(body.event_date, 10),
@@ -119,7 +122,10 @@ export async function POST(req) {
   if (!interest) errors.interest = "Válaszd ki, miben segíthetünk.";
   if (data.phone === null) errors.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
   if (!validFutureDate(data.event_date)) errors.event_date = "Válassz mai vagy későbbi dátumot.";
-  if (data.name.length < 2) errors.name = "Kérjük, add meg a neved.";
+  if (isWedding) {
+    if (nameBride.length < 2) errors.name_bride = "Kérjük, add meg a menyasszony keresztnevét.";
+    if (nameGroom.length < 2) errors.name_groom = "Kérjük, add meg a vőlegény keresztnevét.";
+  } else if (data.name.length < 2) errors.name = "Kérjük, add meg a neved.";
   if (!EMAIL_RE.test(data.email)) errors.email = "Kérjük, adj meg egy érvényes e-mail címet.";
   if (baseInterest === GIFT_INTEREST && !giftType) errors.gift_type = "Válaszd ki, hogy csokorról vagy virágboxról van szó.";
   if (!isWedding && data.location.length < 2) errors.location = "Kérjük, add meg a települést.";
@@ -220,6 +226,8 @@ export async function POST(req) {
     payload.offer_json = JSON.stringify({
       id: payload.id,
       name: payload.name,
+      name_bride: nameBride,
+      name_groom: nameGroom,
       email: payload.email,
       event_date: payload.event_date,
       location: payload.location,

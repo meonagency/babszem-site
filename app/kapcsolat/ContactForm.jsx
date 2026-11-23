@@ -15,7 +15,7 @@ import { LocationInput, TagPicker, ImageUpload } from "./inputs";
 
 const INITIAL = {
   interest: "",
-  name: "", email: "", phone: "", event_date: "", location: "", message: "",
+  name: "", name_bride: "", name_groom: "", email: "", phone: "", event_date: "", location: "", message: "",
   consent: false, hp_x9: "",
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
   flower_category: "", premium_flowers: [], favorite_flowers: [], silk_rental: "", colors: [], greenery: "",
@@ -122,7 +122,10 @@ export default function ContactForm() {
       if (!f.veluma_consent) e.veluma_consent = "A papíráru-segítséghez szükség van a hozzájárulásra.";
     }
     if (s === contactStep) {
-      if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
+      if (isWedding) {
+        if (f.name_bride.trim().length < 2) e.name_bride = "Kérjük, add meg a menyasszony keresztnevét.";
+        if (f.name_groom.trim().length < 2) e.name_groom = "Kérjük, add meg a vőlegény keresztnevét.";
+      } else if (f.name.trim().length < 2) e.name = "Kérjük, add meg a neved.";
       if (!EMAIL_RE.test(f.email.trim())) e.email = "Kérjük, adj meg egy érvényes e-mail címet.";
       if (f.phone && formatPhone(f.phone) === null) e.phone = "Ellenőrizd a telefonszámot (pl. +36 30 123 4567).";
       if (!isWedding && f.location.trim().length < 2) e.location = "Kérjük, add meg a települést.";
@@ -540,9 +543,23 @@ export default function ContactForm() {
 function Contact({ f, set, put, errors, suggestion, wedding }) {
   return (
     <>
-      <Field label={wedding ? "Nevetek" : "Neved"} error={errors.name} required>
-        <input value={f.name} onChange={set("name")} autoComplete="name" maxLength={120} />
-      </Field>
+      {wedding ? (
+        <fieldset className="cf-names">
+          <legend className="cf-label">Hogyan szólíthatunk Titeket?<em aria-hidden="true"> *</em></legend>
+          <div className="cf-row">
+            <Field label="Menyasszony keresztneve" error={errors.name_bride} required>
+              <input value={f.name_bride} onChange={set("name_bride")} autoComplete="given-name" maxLength={40} />
+            </Field>
+            <Field label="Vőlegény keresztneve" error={errors.name_groom} required>
+              <input value={f.name_groom} onChange={set("name_groom")} autoComplete="off" maxLength={40} />
+            </Field>
+          </div>
+        </fieldset>
+      ) : (
+        <Field label="Neved" error={errors.name} required>
+          <input value={f.name} onChange={set("name")} autoComplete="name" maxLength={120} />
+        </Field>
+      )}
       <div className="cf-row">
         <Field label="E-mail" hint="pl. nev@email.hu" error={errors.email} required>
           <input type="email" inputMode="email" value={f.email} onChange={set("email", (v) => v.trim())} autoComplete="email" maxLength={160} />
