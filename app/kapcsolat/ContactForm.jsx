@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL, PREMIUM,
   SEASONAL_EXAMPLES, PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, COLORS, IMAGES, WEDDING,
-  RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
+  RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS, BOUQUET_ITEMS, BOUQUET_SHAPES,
   PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST, VELUMA_DIGITAL_URL,
 } from "./fields";
 import {
@@ -20,7 +20,7 @@ const INITIAL = {
   guests: "", table_layout: "", church: "", church_address: "", budget: "",
   flower_category: "", premium_flowers: [], silk_rental: "", colors: [], greenery: "",
   avoid_flowers: "", decor_points: [], guest_tables: "", head_table: "",
-  rental: "", gifts: [], pinterest: "", images: [], gift_type: "", bridesmaids: "",
+  rental: "", gifts: [], pinterest: "", images: [], gift_type: "", bridesmaids: "", bouquet_shape: "",
   paper_help: "", paper_items: [], invite_type: "", invite_paper: "", invite_qty: "", paper_note: "", digital_interest: "", veluma_consent: false,
 };
 
@@ -400,6 +400,15 @@ export default function ContactForm() {
                 </Suffix>
               </Field>
             </div>
+          )}
+          {BOUQUET_ITEMS.some((i) => f.decor_points.includes(i)) && (
+            <Choice
+              label="Milyen formájú csokrokat szeretnétek?"
+              hint="Nem kötelező. Ez csak a képek kiválasztásában segít, a pontos formát a konzultáción egyeztetjük."
+              options={BOUQUET_SHAPES}
+              value={f.bouquet_shape}
+              onPick={(v) => pick("bouquet_shape", v)}
+            />
           )}
           {(f.decor_points.includes("Vendégasztalok") || f.decor_points.includes("Főasztal")) && (
             <div className="cf-row">

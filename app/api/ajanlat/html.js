@@ -16,14 +16,17 @@ export const norm = (s) =>
 
 const IMAGE_RE = /\.(jpe?g|png|webp|heic|heif)$/i;
 
-/** Fájlnév → { cat, colors, num } a "kategória_színek_sorszám.jpg" minta szerint (lazán). */
+const SHAPES = ["kerekded", "modern"];
+
+/** Fájlnév → { cat, colors, shape, num } a "kategória_színek[_forma]_sorszám.jpg" minta szerint (lazán). A forma elhagyható. */
 export function parseName(name) {
   const base = norm(name).replace(IMAGE_RE, "");
   const parts = base.split(/[_\s]+/).filter(Boolean);
   const cat = ["szezonalis", "premium"].includes(parts[0]) ? parts[0] : "";
   const colorPart = cat ? parts[1] || "" : "";
   const numMatch = base.match(/(\d+)(?!.*\d)/);
-  return { cat, colors: colorPart ? colorPart.split("-").filter(Boolean) : [], num: numMatch ? Number(numMatch[1]) : 9999 };
+  const shape = cat ? parts.slice(2).find((x) => SHAPES.includes(x)) || "" : "";
+  return { cat, colors: colorPart ? colorPart.split("-").filter(Boolean) : [], shape, num: numMatch ? Number(numMatch[1]) : 9999 };
 }
 
 const listOf = (v) =>
@@ -38,6 +41,7 @@ export function plan(offer, files, overrides = {}) {
   const skip = new Set(listOf(overrides.skip).map(norm));
   const cat = offer.flower_category === SEASONAL ? "szezonalis" : offer.flower_category === PREMIUM ? "premium" : "";
   const colors = listOf(offer.colors).flatMap((c) => norm(c).split(/\s+/));
+  const shape = SHAPES.includes(norm(offer.bouquet_shape)) ? norm(offer.bouquet_shape) : "";
 
   const images = (files || []).filter((f) => f && f.id && IMAGE_RE.test(f.name || "") && !skip.has(norm(f.name)));
   const ranked = (folder) =>
@@ -49,6 +53,7 @@ export function plan(offer, files, overrides = {}) {
         if (prefer.has(norm(f.name))) score += 1000;
         if (cat && p.cat === cat) score += 10;
         score += 3 * p.colors.filter((c) => colors.includes(c)).length;
+        if (shape && p.shape) score += p.shape === shape ? 4 : -4; // forma nélküli kép semleges
         return { f, score, num: p.num };
       })
       .sort((a, b) => b.score - a.score || a.num - b.num || a.f.name.localeCompare(b.f.name, "hu"))

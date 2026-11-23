@@ -96,6 +96,7 @@ ${h2("Dekoráció")}
 ${decor}
 <p style="margin:0">&nbsp;</p>
 ${table([
+  ["Csokor formája", d.bouquet_shape],
   ["Vendégasztalok száma", d.guest_tables ? `${d.guest_tables} db` : ""],
   ["Főasztal létszáma", d.head_table ? `${d.head_table} fő` : ""],
   ["Helyszíni munka", d.delivery],

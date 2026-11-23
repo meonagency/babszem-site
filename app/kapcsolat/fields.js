@@ -101,3 +101,7 @@ export const PAPER_NOTE_MAX = 600;
 export const DIGITAL_INTEREST = ["Igen", "Nem", "Még nem tudjuk"];
 export const VELUMA_DIGITAL_URL = "https://veluma.hu/digitalis/signature";
 export const BRIDESMAIDS = "Koszorúslányok / -fiúk díszei";
+
+// Csokor formája: az ajánlatgenerátor a képtár fájlnevében szereplő forma-jelölés (kerekded / modern) alapján válogat
+export const BOUQUET_ITEMS = ["Menyasszonyi csokor", "Dobócsokor", BRIDESMAIDS];
+export const BOUQUET_SHAPES = ["Kerekded", "Modern"];

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import {
   PUBLIC_INTERESTS, TABLE_LAYOUTS, CHURCH, SILK, GREENERY, FLOWER_CATEGORIES, SEASONAL,
   PREMIUM_FLOWERS, RENTAL, GIFTS, DECOR_GROUPS, IMAGES, WEDDING,
-  RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS,
+  RENTAL_INTEREST, GIFT_INTEREST, GIFT_TYPES, BRIDESMAIDS, BOUQUET_ITEMS, BOUQUET_SHAPES,
   PAPER_HELP, PAPER_ITEMS, INVITE_TYPES, INVITE_PAPERS, PAPER_NOTE_MAX, DIGITAL_INTEREST,
 } from "../../kapcsolat/fields";
 import { docHtml, emailHtml, folderName } from "./doc";
@@ -150,6 +150,10 @@ export async function POST(req) {
         flower_category: oneOf(body.flower_category, FLOWER_CATEGORIES),
         decor_points: decorList(body.decor_points, digits(body.bridesmaids)),
         decor_groups: decorGroups(body.decor_points, digits(body.bridesmaids)),
+        bouquet_shape:
+          Array.isArray(body.decor_points) && BOUQUET_ITEMS.some((i) => body.decor_points.includes(i))
+            ? oneOf(body.bouquet_shape, BOUQUET_SHAPES)
+            : "",
         guest_tables: digits(body.guest_tables),
         head_table: digits(body.head_table),
         delivery: "Helyszíni dekorálás + bontás",
@@ -220,6 +224,7 @@ export async function POST(req) {
       avoid_flowers: payload.avoid_flowers,
       decor_points: decor_groups.flatMap((g) => g.items.map((i) => i.replace(/ \(\d+ db\)$/, ""))),
       bridesmaids: digits(body.bridesmaids),
+      bouquet_shape: payload.bouquet_shape || "",
       guest_tables: payload.guest_tables,
       head_table: payload.head_table,
       gifts: payload.gifts ? payload.gifts.split(", ") : [],
