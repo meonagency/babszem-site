@@ -102,7 +102,7 @@ export function plan(offer, files, overrides = {}) {
   for (const f of featuredRank) { if (featured.length >= 4) break; featured.push(f); used.add(f.id); }
   const mood = featured.length ? { hero: featured[0], collage: featured.length >= 4 ? featured.slice(1, 4) : [] } : null;
 
-  const sections = SECTIONS.map((s) => {
+  const sections = SECTIONS.filter((s) => s.key !== "ajandek").map((s) => {
     const names =
       s.key === "ajandek"
         ? GIFT_ITEMS.filter((g) => gifts.has(g))
@@ -230,42 +230,55 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
   const workNo = ROMAN[secs.length];
   const priceBox = (v, ph) => `<div class="price">ÁRSÁV<b>${field(v, ph)}</b></div>`;
 
-  const sectionHtml = secs
-    .map(
-      (s) => `<div class="block">
-  <div class="bh"><div class="no">${s.no}</div><div><h2>${esc(s.title)}</h2></div>${priceBox(prices[s.key], "00 000 – 00 000 Ft")}</div>
-  <table class="items">${s.items
-    .map((it) => `<tr><td class="n">${esc(it.name)}${it.sub ? `<span>${esc(it.sub)}</span>` : ""}</td><td>${esc(it.text)}</td></tr>`)
-    .join("")}</table>
-  ${s.key === "vacsora" ? `<p class="gift"><b>AJÁNDÉK TÉTEL:</b> ${esc(TEXTS.vacsoraGift)}</p>` : ""}
-  <table class="gallery"><tr>${s.images.map((x) => `<td><img src="${img(x.file, x.label)}" alt=""></td>`).join("")}</tr></table>
-</div>`
-    )
-    .join("\n");
-
   const sumRows = [
     ...secs.map((s) => [`${s.no} ${s.title}`, prices[s.key]]),
     [`${workNo} Munkadíj és kiszállás`, prices.munkadij],
   ];
 
+  const route = [huLong(offer.event_date), esc(offer.location), offer.guests ? `${esc(offer.guests)} fő` : ""].filter(Boolean).join(" &nbsp;·&nbsp; ");
+  const runHead = `<div class="hd"><div class="l"><img src="${MARK_URI()}" alt="">BABSZEM VIRÁGMŰHELY</div><div class="r">${esc(name)} &nbsp;·&nbsp; ${huShort(offer.event_date)}</div></div>`;
+
+  // szekció: teljes szélességű főkép (margó nélkül), alatta cím + ársáv, tételek, 3 kisebb kép
+  const sectionPages = secs
+    .map((s) => {
+      const [hero, ...rest] = s.images;
+      const heroH = s.items.length > 7 ? 78 : s.items.length > 4 ? 104 : 124;
+      return `<section class="sp">
+  <img class="sp-hero" style="height:${heroH}mm" src="${img(hero.file, hero.label, true)}" alt="">
+  <div class="sp-body">
+    <div class="sp-head"><div class="no">${s.no}</div><h2>${esc(s.title)}</h2>${priceBox(prices[s.key], "00 000 – 00 000 Ft")}</div>
+    <table class="items">${s.items
+      .map((it) => `<tr><td class="n">${esc(it.name)}${it.sub ? `<span>${esc(it.sub)}</span>` : ""}</td><td>${esc(it.text)}</td></tr>`)
+      .join("")}</table>
+    <div class="sp-row">${rest.map((x) => `<figure><img src="${img(x.file, x.label)}" alt=""><figcaption>${esc(x.label)}</figcaption></figure>`).join("")}</div>
+  </div>
+</section>`;
+    })
+    .join("\n");
+
   return `<!doctype html><html lang="hu"><head><meta charset="utf-8"><title>Ajánlat – ${esc(name)}</title>
 <style>${fonts()}${CSS}</style></head><body>
 
 <section class="cover">
+  <img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt="">
   <div class="cover-logo"><img src="${MARK_URI()}" alt=""><div class="w1">BABSZEM</div><div class="w2">VIRÁGMŰHELY</div></div>
   <div class="cover-title">
     <div class="eyebrow">ESKÜVŐI DEKORÁCIÓS AJÁNLAT</div>
     <h1>${esc(name)}</h1>
-    <div class="meta">${[huLong(offer.event_date), esc(offer.location), offer.guests ? `${esc(offer.guests)} fő` : ""].filter(Boolean).join(" &nbsp;·&nbsp; ")}</div>
+    <div class="meta">${route}</div>
   </div>
-  <div class="orn">✦ ✦ ✦</div>
-  <img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt="">
+</section>
+
+<section class="flow letterpage">
+  ${runHead}
   <div class="letter">
     <p class="salute">Kedves Jegyesek!</p>
     ${TEXTS.intro.map((p) => `<p>${esc(p)}</p>`).join("")}
     <p class="note">${esc(TEXTS.disclaimer)}</p>
   </div>
   <div class="box"><h3>ONLINE KONZULTÁCIÓ</h3><p>${esc(TEXTS.consult)}</p></div>
+  <h2 class="sec" style="margin-top:9mm">Az esküvőtök</h2>
+  <table class="facts">${factRows.join("")}</table>
 </section>
 
 ${
@@ -278,41 +291,44 @@ ${
 }`
     : ""
 }
-<section class="body">
-  <div class="hd"><div class="l"><img src="${MARK_URI()}" alt="">BABSZEM VIRÁGMŰHELY</div><div class="r">${esc(name)} &nbsp;·&nbsp; ${huShort(offer.event_date)}</div></div>
-  <h2 class="sec">Az esküvőtök</h2>
-  <table class="facts">${factRows.join("")}</table>
 
-  ${sectionHtml}
+${sectionPages}
 
+<section class="flow">
+  ${runHead}
   <div class="block">
     <div class="bh"><div class="no">${workNo}</div><div><h2>Munkadíj és kiszállás</h2></div>${priceBox(prices.munkadij, "000 000 – 000 000 Ft")}</div>
     <table class="items">${TEXTS.work.map(([k, v]) => `<tr><td class="n">${k}</td><td>${esc(v)}</td></tr>`).join("")}
       <tr><td class="n">Üzemanyagdíj</td><td>${esc(TEXTS.fuel)}: ${field(prices.uzemanyag, "00 000 Ft")}</td></tr></table>
   </div>
-
   <div class="keep">
     <h2 class="sec">Összesítés</h2>
     <table class="sum">${sumRows.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="v">${field(v, "00 000 – 00 000 Ft")}</td></tr>`).join("")}
       <tr class="total"><td>Végösszeg</td><td class="v">${field(prices.vegosszeg, "000 000 – 000 000 Ft")}</td></tr></table>
     <p class="small">A végösszeg attól függ, melyik változatot választjátok. Az online konzultáció díja (5&nbsp;000&nbsp;Ft) megrendelés esetén a végső árból jóváírásra kerül.</p>
   </div>
+</section>
 
-  <div class="upsell">
-    <h2 class="sec">${esc(UPSELL.title)}</h2>
-    <p style="margin:2mm 0 4mm">${esc(UPSELL.intro)}</p>
-    <table class="items">${planned.upsell.items.map((it) => `<tr><td class="n">${esc(it.label)}</td><td>${esc(it.text)}</td></tr>`).join("")}</table>
-    <table class="gallery up">${`<tr>${planned.upsell.images.map((x) => `<td><img src="${img(x.file, x.label)}" alt=""></td>`).join("")}</tr>`}</table>
-  </div>
+<section class="flow upsell">
+  ${runHead}
+  <h2 class="sec">${esc(UPSELL.title)}</h2>
+  <p class="lead">${esc(UPSELL.intro)}</p>
+  <div class="tri">${planned.upsell.images
+    .map((x, i) => {
+      const it = planned.upsell.items.find((u) => u.label === x.label) || planned.upsell.items[i % planned.upsell.items.length];
+      return `<figure><img src="${img(x.file, x.label)}" alt=""><figcaption>${esc(it.label)}</figcaption><p>${esc(it.text)}</p></figure>`;
+    })
+    .join("")}</div>
+</section>
 
-  <div class="last">
+<section class="flow last">
+  ${runHead}
   <div class="keep">
-    <h2 class="sec" style="margin-top:0">Amit tudni érdemes rólunk</h2>
+    <h2 class="sec">Amit tudni érdemes rólunk</h2>
     <ul class="dots">${TEXTS.about.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
   </div>
-  <div class="box" style="margin-top:6mm"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
-
-  <div class="keep" style="margin-top:6mm">
+  <div class="box" style="margin-top:8mm"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
+  <div class="keep" style="margin-top:8mm">
     <h2 class="sec" style="margin-bottom:2mm">Hogyan tovább?</h2>
     <p>${esc(TEXTS.next)}</p>
     <div class="sign">
@@ -322,7 +338,6 @@ ${
       <div class="small">Babszem Virágműhely</div>
       <div class="contact">${CONTACT.phone} &nbsp;·&nbsp; ${CONTACT.email} &nbsp;·&nbsp; ${CONTACT.web} &nbsp;·&nbsp; ${CONTACT.ig}</div>
     </div>
-  </div>
   </div>
 </section>
 </body></html>`;
@@ -337,74 +352,91 @@ export function footerHtml(validUntil) {
 
 const CSS = `
 @page { size: A4; margin: 16mm 18mm 20mm; }
+@page full { size: A4; margin: 0 0 20mm 0; }
 :root { --gold:#cb8629; --gold-mid:#d9a35b; --gold-light:#e6c28f; --gold-deep:#a86d1f; --cream:#faf6ef; --line:#e4d9c7; --ink:#3a2c1e; --muted:#7a6a58; }
 * { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:Jost,Arial,sans-serif; font-size:9.6pt; line-height:1.5; color:var(--ink); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+body { font-family:Jost,Arial,sans-serif; font-weight:300; font-size:9.6pt; line-height:1.55; color:var(--ink); -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 .f { font-family:Jost,Arial,sans-serif; background:#fbf1df; color:var(--gold-deep); border-bottom:1px dotted var(--gold); padding:0 3px; white-space:nowrap; }
 h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
-.eyebrow { font-family:Cinzel,serif; font-size:8.5pt; letter-spacing:.32em; color:var(--gold-deep); }
-.cover { break-after:page; }
-@page mood { size: A4; margin: 0 0 20mm 0; }
-.mood { page:mood; height:277mm; break-after:page; overflow:hidden; }
+.eyebrow { font-family:Cinzel,serif; font-size:8.5pt; letter-spacing:.34em; color:var(--gold-deep); }
+.flow { break-after:page; }
+.flow:last-of-type { break-after:auto; }
+
+.cover { page:full; height:277mm; break-after:page; overflow:hidden; text-align:center; }
+.cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
+.cover-logo { margin-top:14mm; }
+.cover-logo img { height:17mm; }
+.cover-logo .w1 { font-family:Cinzel,serif; font-size:14pt; letter-spacing:.3em; color:var(--gold); margin-top:2.5mm; }
+.cover-logo .w2 { font-family:Cinzel,serif; font-size:7pt; letter-spacing:.52em; color:var(--gold-mid); margin-top:.5mm; }
+.cover-title { margin-top:12mm; }
+.cover-title h1 { font-size:30pt; margin:5mm 0 3mm; letter-spacing:.04em; }
+.cover-title .meta { font-size:9.6pt; color:var(--muted); letter-spacing:.14em; }
+
+.letter { margin-top:2mm; }
+.letter p, .flow p { margin-bottom:2.6mm; }
+.letter .salute { font-family:Cinzel,serif; font-size:13pt; color:var(--gold-deep); margin-bottom:4mm; }
+.note { color:var(--muted); font-style:italic; }
+.box { background:var(--cream); border-left:2pt solid var(--gold); padding:4mm 5.5mm; margin-top:5mm; }
+.box h3 { font-size:9.5pt; letter-spacing:.14em; color:var(--gold-deep); margin-bottom:1.4mm; }
+.box p { margin:0; }
+
+.hd { display:table; width:100%; border-bottom:.6pt solid var(--gold-light); padding-bottom:3mm; margin-bottom:9mm; }
+.hd > div { display:table-cell; vertical-align:bottom; }
+.hd .l { font-family:Cinzel,serif; font-size:7.6pt; letter-spacing:.28em; color:var(--gold-deep); }
+.hd .l img { height:7.5mm; vertical-align:-2.2mm; margin-right:2.5mm; }
+.hd .r { text-align:right; font-size:7.6pt; color:var(--muted); letter-spacing:.1em; }
+h2.sec { font-size:13pt; letter-spacing:.1em; color:var(--gold-deep); }
+.lead { margin:3mm 0 8mm; color:var(--muted); font-size:10.4pt; }
+.facts { width:100%; border-collapse:collapse; margin:3mm 0 0; }
+.facts td { padding:1.7mm 2.5mm; border-bottom:.5pt solid var(--line); vertical-align:top; width:33%; }
+.facts td.k { color:var(--gold-deep); font-family:Cinzel,serif; font-size:7pt; letter-spacing:.14em; text-transform:uppercase; width:17%; padding-top:2.4mm; }
+
+.mood { page:full; height:277mm; break-after:page; overflow:hidden; }
 .mood-hero { display:block; width:210mm; height:240mm; object-fit:cover; }
 .mood-cap { margin-top:9mm; text-align:center; font-family:Cinzel,serif; font-size:8pt; letter-spacing:.34em; color:var(--gold-deep); text-transform:uppercase; }
 .mood-grid { display:grid; grid-template-columns:1fr 1fr; gap:3mm; width:210mm; }
 .mood-grid img { display:block; width:100%; object-fit:cover; }
 .mood-grid .m1 { grid-column:1 / 3; height:160mm; }
 .mood-grid .m2, .mood-grid .m3 { height:114mm; }
-.upsell { break-before:page; break-inside:avoid; }
-.last { break-before:page; break-inside:avoid; }
-.gallery.up img { aspect-ratio:4/5; }
-.cover-logo { text-align:center; }
-.cover-logo img { height:21mm; }
-.cover-logo .w1 { font-family:Cinzel,serif; font-size:15pt; letter-spacing:.3em; color:var(--gold); margin-top:2.5mm; }
-.cover-logo .w2 { font-family:Cinzel,serif; font-size:7.5pt; letter-spacing:.52em; color:var(--gold-mid); margin-top:.5mm; }
-.cover-title { text-align:center; margin-top:7mm; }
-.cover-title h1 { font-size:21pt; margin:2.5mm 0 1.5mm; letter-spacing:.02em; }
-.cover-title .meta { font-size:10pt; color:var(--muted); letter-spacing:.04em; }
-.orn { text-align:center; margin:4mm 0 5mm; color:var(--gold-light); font-size:9pt; letter-spacing:.6em; }
-.cover-img { width:100%; height:74mm; display:block; object-fit:cover; }
-.letter { margin-top:6mm; }
-.letter p, .body p { margin-bottom:2.4mm; }
-.letter .salute { font-family:Cinzel,serif; font-size:12pt; color:var(--gold-deep); margin-bottom:3mm; }
-.note { color:var(--muted); font-style:italic; }
-.box { background:var(--cream); border-left:2pt solid var(--gold); padding:3.5mm 5mm; margin-top:4mm; }
-.box h3 { font-size:9.5pt; letter-spacing:.14em; color:var(--gold-deep); margin-bottom:1.2mm; }
-.box p { margin:0; }
-.hd { display:table; width:100%; border-bottom:.6pt solid var(--gold-light); padding-bottom:3mm; margin-bottom:7mm; }
-.hd > div { display:table-cell; vertical-align:bottom; }
-.hd .l { font-family:Cinzel,serif; font-size:8pt; letter-spacing:.28em; color:var(--gold-deep); }
-.hd .l img { height:7.5mm; vertical-align:-2.2mm; margin-right:2.5mm; }
-.hd .r { text-align:right; font-size:8pt; color:var(--muted); }
-h2.sec { font-size:12.5pt; letter-spacing:.1em; color:var(--gold-deep); }
-.facts { width:100%; border-collapse:collapse; margin:2mm 0 6mm; }
-.facts td { padding:1.4mm 2.5mm; border-bottom:.5pt solid var(--line); vertical-align:top; width:33%; }
-.facts td.k { color:var(--muted); font-size:8.5pt; width:17%; }
+
+.sp { page:full; break-after:page; }
+.sp-hero { display:block; width:210mm; object-fit:cover; }
+.sp-body { padding:9mm 18mm 0; }
+.sp-head { display:table; width:100%; border-bottom:.8pt solid var(--gold); padding-bottom:2.4mm; margin-bottom:4mm; }
+.sp-head > * { display:table-cell; vertical-align:bottom; }
+.sp-head .no { font-family:Cinzel,serif; color:var(--gold-light); font-size:30pt; line-height:.9; width:20mm; }
+.sp-head h2 { font-size:15pt; letter-spacing:.1em; }
+.sp-row { display:grid; grid-template-columns:repeat(3,1fr); gap:3mm; margin-top:6mm; break-inside:avoid; }
+.sp-row figure img { display:block; width:100%; aspect-ratio:1/1; object-fit:cover; }
+figcaption { font-family:Cinzel,serif; font-size:6.4pt; letter-spacing:.22em; color:var(--gold-deep); text-transform:uppercase; margin-top:1.8mm; }
+
+.price { text-align:right; white-space:nowrap; font-size:7pt; color:var(--muted); letter-spacing:.14em; font-family:Cinzel,serif; }
+.price b { display:block; font-family:Jost,sans-serif; font-weight:500; font-size:10.5pt; color:var(--gold-deep); letter-spacing:0; }
 .block, .keep { break-inside:avoid; }
-.block { margin-bottom:7mm; }
-.bh { display:table; width:100%; border-bottom:.8pt solid var(--gold); padding-bottom:1.6mm; margin-bottom:2.6mm; }
+.block { margin-bottom:8mm; }
+.bh { display:table; width:100%; border-bottom:.8pt solid var(--gold); padding-bottom:1.8mm; margin-bottom:3mm; }
 .bh > div { display:table-cell; vertical-align:bottom; }
 .bh .no { font-family:Cinzel,serif; color:var(--gold-light); font-size:15pt; width:11mm; line-height:1; }
-.bh h2 { font-size:12.5pt; letter-spacing:.1em; }
-.bh .price { text-align:right; white-space:nowrap; font-size:8pt; color:var(--muted); letter-spacing:.06em; }
-.bh .price b { display:block; font-family:Jost,sans-serif; font-weight:500; font-size:10.5pt; color:var(--gold-deep); letter-spacing:0; }
+.bh h2 { font-size:13pt; letter-spacing:.1em; }
 .items { width:100%; border-collapse:collapse; margin-bottom:3mm; }
-.items td { padding:1.3mm 0; vertical-align:top; }
+.items td { padding:1.4mm 0; vertical-align:top; }
 .items td.n { width:46mm; font-weight:500; padding-right:4mm; }
 .items td.n > span { display:block; font-weight:400; font-size:8pt; color:var(--muted); }
-.gift { font-size:8.5pt; color:var(--gold-deep); margin:-1mm 0 3mm !important; }
-.gift b { font-weight:500; letter-spacing:.08em; }
-.gallery { border-collapse:separate; border-spacing:3.2mm 0; margin:0 -3.2mm; width:calc(100% + 6.4mm); table-layout:fixed; }
-.gallery img { width:100%; aspect-ratio:1/1; object-fit:cover; display:block; }
+
 .sum { width:100%; border-collapse:collapse; margin:3mm 0 2mm; }
-.sum td { padding:2mm 2.5mm; border-bottom:.5pt solid var(--line); }
+.sum td { padding:2.2mm 2.5mm; border-bottom:.5pt solid var(--line); }
 .sum td.v { text-align:right; white-space:nowrap; }
 .sum tr.total td { border-bottom:none; border-top:1pt solid var(--gold); background:var(--cream); font-family:Cinzel,serif; font-size:11pt; color:var(--gold-deep); padding:3mm 2.5mm; }
 .small { font-size:8.2pt; color:var(--muted); }
-ul.dots { list-style:none; columns:2; column-gap:8mm; margin-top:2mm; }
-ul.dots li { padding-left:4mm; position:relative; margin-bottom:1.6mm; break-inside:avoid; }
+
+.tri { display:grid; grid-template-columns:repeat(3,1fr); gap:5mm; }
+.tri img { display:block; width:100%; height:128mm; object-fit:cover; }
+.tri p { color:var(--muted); font-size:8.6pt; margin-top:1.5mm; }
+
+ul.dots { list-style:none; columns:2; column-gap:8mm; margin-top:3mm; }
+ul.dots li { padding-left:4mm; position:relative; margin-bottom:1.8mm; break-inside:avoid; }
 ul.dots li::before { content:""; position:absolute; left:0; top:2.1mm; width:1.4mm; height:1.4mm; background:var(--gold-mid); transform:rotate(45deg); }
-.sign { margin-top:7mm; text-align:center; }
+.sign { margin-top:9mm; text-align:center; }
 .sign img { height:12mm; }
 .sign p { margin:2mm 0 0 !important; }
 .sign .by { font-family:Cinzel,serif; font-size:13pt; color:var(--gold-deep); margin:1.5mm 0 1mm; }

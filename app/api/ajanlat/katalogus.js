@@ -156,7 +156,6 @@ export const TEXTS = {
   disclaimer: "Ez az ajánlat a megadott adataitok alapján, egyedileg készült, és díjmentes. Az ajánlat nem jelenti az időpont foglalását.",
   consult:
     "Dekorációs ajánlatunk elfogadása után online találkozunk, és egyeztetjük a részleteket. Ezt a dokumentumot közösen töltjük meg képekkel és pontos információkkal. A konzultáció legalább egy óra, díja 5 000 Ft, amelyet megrendelés esetén a végső árból jóváírunk.",
-  vacsoraGift: "választható asztalszámtartó, asztali futó vagy gyöngyös kiegészítés.",
   about: [
     "A megállapodás után fix árral dolgozunk, utólag nem merül fel rejtett költség.",
     "Csapatban dolgozunk, így a dekoráció akkor is elkészül, ha valamelyikünk váratlanul kiesik.",
