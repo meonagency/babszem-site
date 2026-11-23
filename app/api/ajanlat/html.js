@@ -259,7 +259,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
       const [hero, ...rest] = s.images;
       const heroH = s.items.length > 7 ? 78 : s.items.length > 4 ? 104 : 124;
       return `<section class="sp">
-  <img class="sp-hero" style="height:${heroH}mm" src="${img(hero.file, hero.label, true)}" alt="">
+  <div class="vg"><img class="sp-hero" style="height:${heroH}mm" src="${img(hero.file, hero.label, true)}" alt=""></div>
   <div class="sp-body">
     <div class="sp-head"><div class="no">${s.no}</div><h2>${esc(s.title)}</h2>${priceBox(prices[s.key], "00 000 – 00 000 Ft")}</div>
     <table class="items">${s.items
@@ -275,7 +275,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 <style>${fonts()}${CSS}</style></head><body>
 
 <section class="cover">
-  <img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt="">
+  <div class="vg vg-cover"><img class="cover-img" src="${img(planned.cover, "Borítókép", true)}" alt=""></div>
   <div class="cover-logo"><img src="${MARK_URI()}" alt=""><div class="w1">BABSZEM</div><div class="w2">VIRÁGMŰHELY</div></div>
   <div class="cover-title">
     <div class="eyebrow">ESKÜVŐI DEKORÁCIÓS AJÁNLAT</div>
@@ -298,10 +298,10 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
 
 ${
   planned.mood
-    ? `<section class="mood"><img class="mood-hero" src="${img(planned.mood.hero, "Hangulatkép", true)}" alt=""><div class="mood-cap">${esc(name)}</div></section>
+    ? `<section class="mood"><div class="vg"><img class="mood-hero" src="${img(planned.mood.hero, "Hangulatkép", true)}" alt=""></div><div class="mood-cap">${esc(name)}</div></section>
 ${
   planned.mood.collage.length
-    ? `<section class="mood"><div class="mood-grid"><img class="m1" src="${img(planned.mood.collage[0], "", true)}" alt=""><img class="m2" src="${img(planned.mood.collage[1], "")}" alt=""><img class="m3" src="${img(planned.mood.collage[2], "")}" alt=""></div></section>`
+    ? `<section class="mood"><div class="mood-grid"><div class="vg m1"><img src="${img(planned.mood.collage[0], "", true)}" alt=""></div><img class="m2" src="${img(planned.mood.collage[1], "")}" alt=""><img class="m3" src="${img(planned.mood.collage[2], "")}" alt=""></div></section>`
     : ""
 }`
     : ""
@@ -377,6 +377,14 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 .flow { break-after:page; }
 .flow:last-of-type { break-after:auto; }
 
+.vg { position:relative; width:210mm; overflow:hidden; }
+.vg img { display:block; }
+/* egységes vignetta: a kép szélén legfeljebb 20% sötétítés, középen semmi */
+.vg::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 58%, rgba(30,20,10,.20) 100%); }
+/* címlap: a kép alja egyenletesen halványodva olvad a lapba, a logó és a cím ebből indul */
+.vg-cover::before { content:""; position:absolute; left:0; right:0; bottom:0; height:46mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, rgba(255,255,255,0), var(--paper, #fff)); }
+.mood-grid .m1 img { width:100%; height:160mm; object-fit:cover; }
+.mood-grid .vg.m1 { width:100%; }
 .cover { page:full; height:277mm; break-after:page; overflow:hidden; text-align:center; }
 .cover-img { display:block; width:210mm; height:150mm; object-fit:cover; }
 .cover-logo { margin-top:14mm; }
