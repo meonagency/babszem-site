@@ -15,7 +15,8 @@ export const KEPCIMKEK = {
   "szezonalis_feher-zold-puder_06.jpg": "rózsa",
   "szezonalis_feher-zold-puder_08.jpg": "rózsa",
   "szezonalis_rozsaszin-narancs_01.heic": "rózsa dália",
-  "szezonalis_rozsaszin-narancs_02.heic": "rózsa dália liziantusz"
+  "szezonalis_rozsaszin-narancs_02.heic": "rózsa dália liziantusz",
+  "szezonalis_rozsaszin-lila-feher-barack_09.jpg": "rózsa liziantusz hortenzia szegfű margaréta"
  },
  "1Rrlpl7HnFVEzxyWxSrogd2VWeFZyYAyH": {
   "altalanos_feher-krem-puder_03.jpg": "rezgő",
@@ -52,7 +53,9 @@ export const KEPCIMKEK = {
   "szezonalis_bordo-zold-krem_04.jpg": "dália rózsa liziantusz varjúháj",
   "szezonalis_narancs-barack-terrakotta-krem_25.jpg": "rózsa dália",
   "szezonalis_narancs-terrakotta_01.heic": "dália rózsa",
-  "szezonalis_rozsaszin-piros-zold_05.png": "gerbera rózsa"
+  "szezonalis_rozsaszin-piros-zold_05.png": "gerbera rózsa",
+  "premium_terrakotta-kek-bordo_02.jpg": "orchidea kála rózsa szegfű",
+  "premium_terrakotta-kek-bordo_03.jpg": "orchidea kála rózsa szegfű"
  },
  "1KnD256D21kk5R53rY3qnjKp1BnYDzRWA": {
   "altalanos_barack-puder_21.jpg": "rózsa rezgő",
@@ -193,5 +196,12 @@ export const KEPCIMKEK = {
  },
  "1zfvy-Z0kULTl1aXEeEGZo4ahbq6oQ55H": {
   "szezonalis_sarga-feher-zold_01.jpg": "napraforgó kamilla rezgő"
+ },
+ "1RU_GMMa3wH-Sg9zrHbN8Fbhb7oESBAE4": {
+  "altalanos_feher-zold_01.jpg": "rózsa szegfű",
+  "szezonalis_feher-rozsaszin-bordo_01.jpg": "dália rózsa szegfű liziantusz"
+ },
+ "1GuCcOAQWyxoiMx2DmLUIjH4dDeMFfpZ-": {
+  "altalanos_feher-sarga_01.jpg": "rózsa szegfű"
  }
 };

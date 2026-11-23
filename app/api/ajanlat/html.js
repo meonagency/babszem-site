@@ -57,13 +57,14 @@ export function plan(offer, files, overrides = {}) {
   const shape = SHAPES.includes(norm(offer.bouquet_shape)) ? norm(offer.bouquet_shape) : "";
 
   const images = (files || []).filter((f) => f && f.id && IMAGE_RE.test(f.name || "") && !skip.has(norm(f.name)));
-  const ranked = (folder) =>
+  // folders: egy mappa-azonosító vagy több (pl. a székdíszek az Odavezető út képeiből is merítenek)
+  const ranked = (folders) =>
     images
-      .filter((f) => (f.parents || []).includes(folder))
+      .filter((f) => (f.parents || []).some((p) => [].concat(folders).includes(p)))
       .filter((f) => cat === "premium" || parseName(f.name).cat !== "premium") // prémium képet csak prémium kérésnél mutatunk (árvárakozás); a prémium kérés a szezonális és általános képekre tartalékként támaszkodhat
       .map((f) => {
         const p = parseName(f.name);
-        const tags = (KEPCIMKEK[folder]?.[f.name] || "").split(" ").map(norm).filter(Boolean);
+        const tags = (KEPCIMKEK[(f.parents || [])[0]]?.[f.name] || "").split(" ").map(norm).filter(Boolean);
         let score = 0;
         if (prefer.has(norm(f.name))) score += WEIGHTS.prefer;
         if (avoidText) score += WEIGHTS.avoid * tags.filter((t) => avoidText.includes(t)).length; // gépi címke: büntetés, nem kizárás
@@ -81,6 +82,12 @@ export function plan(offer, files, overrides = {}) {
   const gifts = new Set(listOf(offer.gifts));
   const bridesmaids = String(offer.bridesmaids ?? "").replace(/\D/g, "");
 
+  // a dokumentumban egy kép (fájl-azonosító) csak egyszer szerepelhet: a borító és az összes szekció közös "used" halmazt használ
+  const used = new Set();
+  const coverPool = ranked(BORITO_FOLDER);
+  const cover = coverPool[0] || null;
+  if (cover) used.add(cover.id);
+
   const sections = SECTIONS.map((s) => {
     const names =
       s.key === "ajandek"
@@ -97,11 +104,10 @@ export function plan(offer, files, overrides = {}) {
       if (n === "Főasztal" && offer.head_table) sub = `${offer.head_table} fős`;
       if (n === "Koszorúslányok / -fiúk díszei" && bridesmaids) sub = `${bridesmaids} db`;
       if (n === "Templomi dekoráció" && offer.church_address) sub = offer.church_address;
-      return { name: def.label || n, sub, text: def.text || "A részleteket a konzultáción egyeztetjük.", pool: def.folder ? ranked(def.folder) : [] };
+      return { name: def.label || n, sub, text: def.text || "A részleteket a konzultáción egyeztetjük.", pool: def.folder ? ranked([def.folder, ...(def.alsoFrom || [])]) : [] };
     });
     // képek elosztása a tételek között körbe-körbe, legfeljebb 4
     const imgs = [];
-    const used = new Set();
     for (let round = 0; imgs.length < PER_SECTION && round < PER_SECTION; round++) {
       for (const it of items) {
         if (imgs.length >= PER_SECTION) break;
@@ -114,8 +120,7 @@ export function plan(offer, files, overrides = {}) {
     return { ...s, items: items.map(({ pool, ...rest }) => rest), images: imgs };
   }).filter(Boolean);
 
-  const coverPool = ranked(BORITO_FOLDER);
-  return { cover: coverPool[0] || null, sections };
+  return { cover, sections };
 }
 
 // ---------- megjelenítés ----------

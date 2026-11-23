@@ -64,6 +64,8 @@ export const ITEMS = {
   "Kapu bérlése": { folder: "1RmheHl_aefEHL2DY21iyG6JoWRbo_2VL", text: "Több kaputípus közül választhattok." },
   "Székek dekorációja kis virágcsokorral": {
     folder: "1OVH5wasbfAOkBT7735HcrCTH44B0UAyM",
+    // az Odavezető út képei a székdíszeknél is használhatók (dokumentumban egy kép csak egyszer szerepel, lásd plan())
+    alsoFrom: ["1zfvy-Z0kULTl1aXEeEGZo4ahbq6oQ55H"],
     label: "Székek dekorációja",
     text: "Kis virágcsokor a főszékeken és az odavezető út székein.",
   },
