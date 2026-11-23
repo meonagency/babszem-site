@@ -356,7 +356,28 @@ ${sectionPages}
   </div>
 </section>
 <script>
-window.addEventListener("load",function(){try{var im=document.querySelector(".cover-img");if(!im)return;var c=document.createElement("canvas");c.width=c.height=16;var x=c.getContext("2d");x.drawImage(im,0,0,16,16);var d=x.getImageData(0,0,16,16).data,r=0,g=0,b=0,n=0;for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++}r/=n;g/=n;b/=n;var mx=Math.max(r,g,b)/255,mn=Math.min(r,g,b)/255,h=0,dl=mx-mn;if(dl>0){var R=r/255,G=g/255,B=b/255;h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4;h=h*60;if(h<0)h+=360}h=(h+180)%360;var s=Math.min(.32,Math.max(.14,dl*.6));document.querySelector(".cover").style.setProperty("--cd","hsl("+h.toFixed(0)+","+Math.round(s*100)+"%,12%)")}catch(e){}});
+window.addEventListener("load",function(){
+  var MM=96/25.4,Q=2.2;
+  function tone(im){try{var c=document.createElement("canvas");c.width=c.height=16;var x=c.getContext("2d");x.drawImage(im,0,0,16,16);var d=x.getImageData(0,0,16,16).data,r=0,g=0,b=0,n=0;for(var i=0;i<d.length;i+=4){r+=d[i];g+=d[i+1];b+=d[i+2];n++}r/=n;g/=n;b/=n;var R=r/255,G=g/255,B=b/255,mx=Math.max(R,G,B),mn=Math.min(R,G,B),dl=mx-mn,h=0;if(dl>0){h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4;h*=60;if(h<0)h+=360}h=(h+180)%360;var s=Math.min(.32,Math.max(.14,dl*.6));return hsl(h,s,.12)}catch(e){return null}}
+  function hsl(h,s,l){var a=s*Math.min(l,1-l);function f(n){var k=(n+h/30)%12;return Math.round(255*(l-a*Math.max(-1,Math.min(k-3,9-k,1))))}return[f(0),f(8),f(4)]}
+  var cov=document.querySelector(".cover"),ci=document.querySelector(".cover-img"),dark=ci?tone(ci):null;
+  if(dark&&cov)cov.style.setProperty("--cd","rgb("+dark.join(",")+")");
+  var cd=dark||[42,33,24];
+  document.querySelectorAll(".vg").forEach(function(box){try{
+    var im=box.querySelector("img");if(!im||!im.naturalWidth)return;
+    var r=im.getBoundingClientRect(),w=Math.round(r.width*Q),h=Math.round(r.height*Q);
+    var c=document.createElement("canvas");c.width=w;c.height=h;var x=c.getContext("2d");
+    var sc=Math.max(w/im.naturalWidth,h/im.naturalHeight),dw=im.naturalWidth*sc,dh=im.naturalHeight*sc;
+    x.drawImage(im,(w-dw)/2,(h-dh)/2,dw,dh);
+    x.save();var fx=w*.5,fy=h*.52;x.translate(w*.5,h*.48);x.scale(fx*Math.SQRT2,fy*Math.SQRT2);
+    var rg=x.createRadialGradient(0,0,0,0,0,1);rg.addColorStop(.58,"rgba(30,20,10,0)");rg.addColorStop(1,"rgba(30,20,10,.2)");
+    x.fillStyle=rg;x.fillRect(-2,-2,4,4);x.restore();
+    if(box.classList.contains("vg-cover")){var gh=92*MM*Q,lg=x.createLinearGradient(0,h-gh,0,h);
+      lg.addColorStop(0,"rgba("+cd.join(",")+",0)");lg.addColorStop(1,"rgb("+cd.join(",")+")");x.fillStyle=lg;x.fillRect(0,h-gh,w,gh)}
+    var url=c.toDataURL("image/jpeg",.92);
+    im.style.objectFit="fill";im.src=url;box.classList.add("flat");
+  }catch(e){}});
+});
 </script></body></html>`;
 }
 
@@ -385,6 +406,7 @@ h1,h2,h3 { font-family:Cinzel,Georgia,serif; font-weight:400; }
 /* egységes vignetta: a kép szélén legfeljebb 20% sötétítés, középen semmi */
 .vg::after { content:""; position:absolute; inset:0; pointer-events:none; background:radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 58%, rgba(30,20,10,.20) 100%); }
 /* címlap: a kép alja lefelé egyenletesen sötétedik a háttérkép komplementer sötét tónusába, ami kitölti az oldal többi részét */
+.vg.flat::before, .vg.flat::after { display:none; }
 .vg-cover::before { content:""; position:absolute; left:0; right:0; bottom:0; height:92mm; z-index:1; pointer-events:none; background:linear-gradient(to bottom, rgba(0,0,0,0), var(--cd)); }
 .mood-grid .m1 img { width:100%; height:160mm; object-fit:cover; }
 .mood-grid .vg.m1 { width:100%; }
