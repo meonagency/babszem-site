@@ -1,11 +1,15 @@
 // Google Places Autocomplete (New) proxy – a kulcs a szerveren marad, a böngésző nem lát Google-sütit.
 // Kulcs nélkül 204-et ad, ilyenkor a mezők sima szövegmezőként működnek.
 
+import { allow } from "../ratelimit.js";
+
 const ENDPOINT = "https://places.googleapis.com/v1/places:autocomplete";
 
 export async function GET(req) {
   const key = process.env.GOOGLE_PLACES_API_KEY;
   if (!key) return new Response(null, { status: 204 });
+  // IP-onként 90 kérés percenként (gépelés közbeni javaslatokhoz bőven elég)
+  if (!allow(req, "places", 90, 60 * 1000)) return Response.json({ items: [] }, { status: 429, headers: { "Retry-After": "60" } });
 
   const { searchParams } = new URL(req.url);
   const q = (searchParams.get("q") || "").trim().slice(0, 80);

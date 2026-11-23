@@ -7,6 +7,7 @@ import {
 } from "../../kapcsolat/fields";
 import { docHtml, emailHtml, folderName } from "./doc";
 import { formatPhone, formatMoney, moneyValue, EMAIL_RE, validFutureDate, inRange, LIMITS } from "../../kapcsolat/format";
+import { allow } from "../ratelimit.js";
 
 // Tömb vagy vesszős szöveg → "a, b, c" (szabad bevitel is megengedett, rövidítve)
 const tagList = (v, max = 300) => {
@@ -73,6 +74,13 @@ const imageList = (v) => {
 };
 
 export async function POST(req) {
+  // IP-onként 6 beküldés 10 percben (a ténylegesen érdeklődők messze alatta maradnak)
+  if (!allow(req, "kapcsolat", 6, 10 * 60 * 1000)) {
+    return Response.json(
+      { ok: false, error: "Túl sok próbálkozás. Kérjük, próbáljátok újra pár perc múlva, vagy írjatok közvetlenül e-mailben." },
+      { status: 429, headers: { "Retry-After": "600" } }
+    );
+  }
   let body;
   try {
     body = await req.json();
