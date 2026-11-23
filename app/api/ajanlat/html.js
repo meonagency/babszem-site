@@ -274,11 +274,6 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
     <p class="small">A végösszeg attól függ, melyik változatot választjátok. Az online konzultáció díja (5&nbsp;000&nbsp;Ft) megrendelés esetén a végső árból jóváírásra kerül.</p>
   </div>
 
-  <div class="keep">
-    <h2 class="sec" style="margin-top:7mm">Amit tudni érdemes rólunk</h2>
-    <ul class="dots">${TEXTS.about.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-  </div>
-
   <div class="upsell">
     <h2 class="sec">${esc(UPSELL.title)}</h2>
     <p style="margin:2mm 0 4mm">${esc(UPSELL.intro)}</p>
@@ -287,7 +282,11 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
   </div>
 
   <div class="last">
-  <div class="box" style="margin-top:0"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
+  <div class="keep">
+    <h2 class="sec" style="margin-top:0">Amit tudni érdemes rólunk</h2>
+    <ul class="dots">${TEXTS.about.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+  </div>
+  <div class="box" style="margin-top:6mm"><h3>FONTOS TUDNIVALÓK</h3><p>${esc(TEXTS.important)}</p></div>
 
   <div class="keep" style="margin-top:6mm">
     <h2 class="sec" style="margin-bottom:2mm">Hogyan tovább?</h2>
