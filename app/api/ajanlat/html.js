@@ -40,6 +40,10 @@ const listOf = (v) =>
  * Képválogatás. files: a Make Drive-listája [{id, name, parents, thumbnailLink}].
  * overrides: { prefer: [fájlnév…], skip: [fájlnév…] } – a táblázat kézi oszlopai.
  */
+// Pontozás sorrendje (a súlyokból következik): kézi felülírás > kerülendő virág > szín > kedvenc virág > forma > szezon/ár kategória > sorszám.
+// Egy helyen állítható; a szín egy találata legalább annyit ér, mint a kedvenc virágok együtt (legfeljebb 2 virág számít).
+export const WEIGHTS = { prefer: 1000, avoid: -15, color: 10, flower: 5, flowerMax: 2, shape: 4, category: 2, mixed: 2 };
+
 export function plan(offer, files, overrides = {}) {
   const prefer = new Set(listOf(overrides.prefer).map(norm));
   const skip = new Set(listOf(overrides.skip).map(norm));
@@ -47,7 +51,9 @@ export function plan(offer, files, overrides = {}) {
   const colorList = listOf(offer.colors);
   const colors = requestedColorKeys(colorList);
   const wantsMixed = colorList.some((c) => norm(c) === "szines");
-  const favorites = listOf(offer.favorite_flowers).map(norm);
+  // kedvenc (szezonális) és a megadott prémium virágok ugyanúgy "kért virág"
+  const wanted = [...listOf(offer.favorite_flowers), ...listOf(offer.premium_flowers)].map(norm);
+  const avoidText = norm(offer.avoid_flowers); // szabad szöveg: a címke tövét keressük benne (pl. "liliomot" ~ "liliom")
   const shape = SHAPES.includes(norm(offer.bouquet_shape)) ? norm(offer.bouquet_shape) : "";
 
   const images = (files || []).filter((f) => f && f.id && IMAGE_RE.test(f.name || "") && !skip.has(norm(f.name)));
@@ -56,16 +62,15 @@ export function plan(offer, files, overrides = {}) {
       .filter((f) => (f.parents || []).includes(folder))
       .map((f) => {
         const p = parseName(f.name);
+        const tags = (KEPCIMKEK[folder]?.[f.name] || "").split(" ").map(norm).filter(Boolean);
         let score = 0;
-        if (prefer.has(norm(f.name))) score += 1000;
-        if (cat && p.cat === cat) score += 10;
-        score += 3 * p.colors.filter((c) => colors.has(c)).length;
-        if (wantsMixed && p.colors.length >= 3) score += 2; // "színes" kérés: kis bónusz a sokszínű képnek
-        if (favorites.length) { // kedvenc virág: kis plusz a címkézett képeknek (a rózsa/dália szinte mindenhol szerepel, ezért ez csak finom hangolás)
-          const tags = (KEPCIMKEK[folder]?.[f.name] || "").split(" ").map(norm);
-          score += 2 * favorites.filter((x) => tags.includes(x)).length;
-        }
-        if (shape && p.shape) score += p.shape === shape ? 4 : -4; // forma nélküli kép semleges
+        if (prefer.has(norm(f.name))) score += WEIGHTS.prefer;
+        if (avoidText) score += WEIGHTS.avoid * tags.filter((t) => avoidText.includes(t)).length; // gépi címke: büntetés, nem kizárás
+        score += WEIGHTS.color * p.colors.filter((c) => colors.has(c)).length;
+        if (wantsMixed && p.colors.length >= 3) score += WEIGHTS.mixed; // "színes" kérés: kis bónusz a sokszínű képnek
+        if (wanted.length) score += WEIGHTS.flower * Math.min(WEIGHTS.flowerMax, wanted.filter((x) => tags.includes(x)).length);
+        if (shape && p.shape) score += p.shape === shape ? WEIGHTS.shape : -WEIGHTS.shape; // forma nélküli kép semleges
+        if (cat && p.cat === cat) score += WEIGHTS.category;
         return { f, score, num: p.num };
       })
       .sort((a, b) => b.score - a.score || a.num - b.num || a.f.name.localeCompare(b.f.name, "hu"))

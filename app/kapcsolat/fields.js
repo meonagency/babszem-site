@@ -31,7 +31,7 @@ export const FLOWER_CATEGORIES = [SEASONAL, PREMIUM, "Még nem tudjuk"];
 
 // Kedvenc virágok a szezonális kategóriához. Nem kötelező és nem kötelezettség: az aktuális szezon kínálatától függ,
 // hogy melyik érhető el. A lista a Képtár képein ténylegesen látható virágokra épül.
-export const FAVORITE_FLOWERS = ["rózsa", "dália", "szegfű", "liziantusz", "szarkaláb", "hortenzia", "gerbera"];
+export const FAVORITE_FLOWERS = ["rózsa", "dália", "szegfű", "liziantusz", "gerbera"];
 
 // Ezeket meg kell rendelni, ezért itt van értelme a választásnak
 export const PREMIUM_FLOWERS = ["peónia", "hortenzia", "orchidea", "liliom", "boglárka", "szarkaláb", "kála"];
