@@ -33,9 +33,20 @@ const budapestPlusDays = (days) => {
   return `${p.year}. ${p.month}. ${p.day}`;
 };
 
+// Csak a Google képszerverei: a thumbnailLink a kérés része, ne lehessen vele más hosztot hívni.
+function allowedThumbHost(src) {
+  try {
+    const u = new URL(src);
+    return u.protocol === "https:" && (u.hostname === "googleusercontent.com" || u.hostname.endsWith(".googleusercontent.com"));
+  } catch {
+    return false;
+  }
+}
+
 async function fetchThumb(file) {
   if (!file?.thumbnailLink) return null;
   const src = file.thumbnailLink.replace(/=s\d+(-[a-z]+)?$/i, "") + "=s1400";
+  if (!allowedThumbHost(src)) return null;
   try {
     const res = await fetch(src, { signal: AbortSignal.timeout(9000) });
     const type = res.headers.get("content-type") || "";
