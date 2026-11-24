@@ -60,18 +60,28 @@ const hash = (str) => [...String(str)].reduce((h, c) => Math.imul(h ^ c.charCode
  * Pontozás: színtalálat (WEIGHTS.color) > azonos pontszámnál az ajánlat azonosítójából képzett, stabil sorrend (így nem mindenkinél ugyanaz a három kép).
  * Válogatás: előbb tételenként (szett, meghívó, ültetőkártya…) a legjobb, hogy a három kép ne ugyanazt mutassa; a hiányt a következő legjobbak töltik.
  */
+// Veluma-képek hiányzó színeihez: a kért szín helyett használható közeli színek (kisebb súllyal).
+const VELUMA_NEAR = { bordo: ["barna", "krem", "piros"], rozsaszin: ["puder", "piros"], barack: ["terrakotta", "krem"] };
+const VELUMA_PAIR = ["krem", "puder"]; // rózsaszín és barack mellé a krém-púder kombináció is illik
+
 export function pickVeluma(offer, images) {
   const colorList = listOf(offer.colors);
   const colors = requestedColorKeys(colorList);
   const wantsMixed = colorList.some((c) => norm(c) === "szines");
   const seed = String(offer.id || offer.name || "");
+  const near = new Set([...colors].flatMap((c) => VELUMA_NEAR[c] || []).filter((c) => !colors.has(c)));
+  const wantsPair = colors.has("rozsaszin") || colors.has("barack");
   const ranked = images
     .filter((f) => (f.parents || []).includes(VELUMA.folder))
     .map((f) => ({ f, p: parseVeluma(f.name) }))
     .filter((x) => x.p && VELUMA.labels[x.p.tetel]) // a "hangulat" és ismeretlen tételek nem papíráru-képek
     .map((x) => ({
       ...x,
-      score: WEIGHTS.color * x.p.colors.filter((c) => colors.has(c)).length + (wantsMixed && x.p.colors.length >= 3 ? WEIGHTS.mixed : 0),
+      score:
+        WEIGHTS.color * x.p.colors.filter((c) => colors.has(c)).length +
+        4 * x.p.colors.filter((c) => near.has(c)).length +
+        (wantsPair && VELUMA_PAIR.every((c) => x.p.colors.includes(c)) ? 6 : 0) +
+        (wantsMixed && x.p.colors.length >= 3 ? WEIGHTS.mixed : 0),
       tie: hash(seed + x.f.name),
     }))
     .sort((a, b) => b.score - a.score || a.tie - b.tie);
