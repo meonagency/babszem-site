@@ -3,6 +3,7 @@ import "@fontsource-variable/jost";
 import "./globals.css";
 import CookieConsent from "./CookieConsent";
 import OfferPopup from "./OfferPopup";
+import PartnerPopup from "./PartnerPopup";
 
 export const metadata = {
   metadataBase: new URL("https://www.babszemviragmuhely.com"),
@@ -31,6 +32,7 @@ export default function RootLayout({ children }) {
         {children}
         <CookieConsent />
         <OfferPopup />
+        <PartnerPopup />
       </body>
     </html>
   );

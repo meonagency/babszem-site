@@ -3,9 +3,8 @@ import { BrandMark } from "./Logo";
 import { F, photoProps } from "./fotok";
 import RevealInit from "./RevealInit";
 import { CookieSettingsButton } from "./CookieConsent";
-
-const VELUMA_URL =
-  "https://veluma.hu/?utm_source=babszem-viragmuhely&utm_medium=referral&utm_campaign=partner-2026&utm_content=weboldal";
+import PartnerCarousel from "./PartnerCarousel";
+import { VELUMA_URL } from "./veluma";
 
 /* Főoldal: editorial fotósor. Stílus: Cinzel + Jost, arany/krém (a logócsomag
    színei), éles képélek, pill gombok. Minden kép a public/fotok mappából jön. */
@@ -88,10 +87,9 @@ export default function Home() {
             className="vp"
             target="_blank"
             rel="noopener"
-            aria-label="Grafikai partnerünk: Veluma Wedding, új lapon nyílik"
+            aria-label="Veluma Wedding, grafikai partnerünk, új lapon nyílik"
           >
-            <span className="vp-t">Grafikai partnerünk</span>
-            <img src="/veluma-logo.svg" alt="" width="104" height="26" className="vp-logo" />
+            <span className="vl" aria-hidden="true" />
           </a>
           <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
         </div>
@@ -190,6 +188,26 @@ export default function Home() {
           ))}
         </section>
 
+        {/* 6b. Grafikai partner: Veluma Wedding papírtermékek */}
+        <section className="sec partner-sec" id="partner" aria-labelledby="partner-title">
+          <div className="wrapx">
+            <header className="pt-head" data-reveal>
+              <div className="pt-copy">
+                <h2 id="partner-title">Grafikai partnerünk</h2>
+                <a href={VELUMA_URL} className="vl-link" target="_blank" rel="noopener" aria-label="Veluma Wedding, új lapon nyílik">
+                  <span className="vl" aria-hidden="true" />
+                </a>
+                <p>
+                  A meghívók, az ültetőkártyák, az étlapok és az üdvözlőtáblák a Veluma Wedding stúdiójából érkeznek, a
+                  dekorációval azonos színvilágban. Minden esküvőhöz egyedi elemek készülnek.
+                </p>
+                <a href={VELUMA_URL} className="btn btn--soft" target="_blank" rel="noopener">Veluma megtekintése</a>
+              </div>
+            </header>
+          </div>
+          <PartnerCarousel />
+        </section>
+
         {/* 7. Kiegészítők: hétcellás képrács, árnyalt háttéren */}
         <section className="sec sec--tint" id="kiegeszitok" aria-labelledby="kieg-title">
           <div className="wrapx">
@@ -210,7 +228,7 @@ export default function Home() {
           <div className="closing-copy" data-reveal>
             <h2 id="zaras-title" className="h-lg">Ez a ti napotok.<br />Mi szeretettel virágba öltöztetjük.</h2>
             <p>Írjátok meg a dátumot, a helyszínt és az elképzeléseiteket, hogy minden szirom rólatok szóljon. Két héten belül személyre szabott ajánlatot küldünk.</p>
-            <a href="/kapcsolat" className="btn btn--lg">Kérjetek ajánlatot</a>
+            <a href="/kapcsolat" className="btn btn--lg">Ajánlatot kérünk</a>
             <p className="closing-note">Csokorra, virágboxra és koszorúra ugyanezen az űrlapon lehet érdeklődni.</p>
           </div>
         </section>

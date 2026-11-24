@@ -39,3 +39,6 @@ export function saveConsent(choice) {
   announce(record, true);
   return record;
 }
+
+/* Az első (ajánlatkérő) ablak bezárásakor ez az esemény indítja a Veluma ablak időzítőjét */
+export const OFFER_CLOSED = "babszem:offer-closed";

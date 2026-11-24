@@ -4,11 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "./consent.css";
-import { CONSENT_EVENT, readConsent } from "./consent";
+import { CONSENT_EVENT, OFFER_CLOSED, readConsent } from "./consent";
 import { photoProps } from "./fotok";
 import { useModal } from "./useModal";
 
 const SEEN = "babszem-offer-seen";
+const CLOSED = "babszem-offer-closed";
 const SKIP = ["/kapcsolat", "/adatkezeles"];
 const DELAY = 10000;
 
@@ -18,7 +19,13 @@ export default function OfferPopup() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const box = useRef(null);
-  const close = () => setOpen(false);
+  const close = () => {
+    setOpen(false);
+    try {
+      sessionStorage.setItem(CLOSED, "1");
+    } catch {}
+    window.dispatchEvent(new Event(OFFER_CLOSED));
+  };
 
   useEffect(() => {
     if (SKIP.some((p) => path.startsWith(p))) {
@@ -74,7 +81,7 @@ export default function OfferPopup() {
               Minden ajánlatkérésre személyes katalógust készítünk nektek, hogy a közös munkát örömmel éljük át.
               Meséljetek az elképzeléseitekről, mi pedig szeretettel összeállítjuk a ti virágaitokat.
             </p>
-            <Link href="/kapcsolat" className="op-cta" onClick={close}>Kérjetek ajánlatot</Link>
+            <Link href="/kapcsolat" className="op-cta" onClick={close}>Ajánlatot kérünk</Link>
             <button type="button" className="op-later" onClick={close}>Később</button>
           </div>
         </div>
