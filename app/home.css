@@ -92,13 +92,19 @@ html:has(.home) { scroll-behavior: auto; }
 @media (min-width: 1100px) { .home-nav { display: flex; } }
 
 .head-cta { display: flex; align-items: center; gap: 10px; }
-.home .btn--soft { background: #efe6d6; color: var(--ink); }
-.home .btn--soft:hover { background: #e4d8c3; color: var(--ink); }
+/* Grafikai partner: sima szöveg + Veluma logó */
+.home .vp { display: inline-flex; align-items: center; gap: 12px; border-bottom: 0; padding-bottom: 0; color: var(--muted); }
+.vp-t { font-size: 13px; letter-spacing: 0.04em; white-space: nowrap; }
+.vp-logo { display: block; width: 104px; height: auto; opacity: 0.9; transition: opacity 0.25s ease; }
+.home .vp:hover { color: var(--ink); }
+.home .vp:hover .vp-logo { opacity: 1; }
 @media (max-width: 599px) {
   .home-head { gap: 10px; }
   .head-cta { gap: 8px; }
   .head-cta .btn { padding: 8px 12px; font-size: 13px; letter-spacing: 0.02em; }
-  .hide-sm { display: none; }
+  .home .vp { flex-direction: column; align-items: flex-end; gap: 4px; }
+  .vp-t { font-size: 9px; letter-spacing: 0.07em; line-height: 1; }
+  .vp-logo { width: 70px; }
   .logo-inline { font-size: 17px; gap: 8px; }
   .home-head .logo-inline-mark { height: 30px; width: 21px; animation: none; }
 }

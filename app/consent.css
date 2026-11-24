@@ -2,7 +2,7 @@
 [data-overlay-root] { font-family: var(--font-body); color: var(--ink); }
 [data-overlay-root] h2 { font-family: var(--font-display); font-weight: 400; margin: 0; }
 [data-overlay-root] p { margin: 0; }
-[data-overlay-root] a { border-bottom: 0; padding-bottom: 0; }
+:where([data-overlay-root]) a { border-bottom: 0; padding-bottom: 0; }
 [data-overlay-root] :is(button, a):focus-visible { outline: 2px solid #96601a; outline-offset: 3px; }
 [data-overlay-root] button { font: inherit; }
 
@@ -61,7 +61,8 @@
   background: #96601a; color: #fff; font-size: 17px; font-weight: 450; letter-spacing: 0.02em;
   transition: background 0.25s ease, transform 0.15s ease;
 }
-.op-cta:hover { background: #7a4d12; color: #fff; }
+.op-body .op-cta { padding: 14px 32px; border-bottom: 0; line-height: 1.2; }
+.op-body .op-cta:hover { background: #7a4d12; color: #fff; }
 .op-later { background: none; border: 0; padding: 8px 0; cursor: pointer; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
 .op-x {
   position: absolute; top: 8px; right: 10px; width: 44px; height: 44px; border: 0; border-radius: 999px;

@@ -85,12 +85,13 @@ export default function Home() {
         <div className="head-cta">
           <a
             href={VELUMA_URL}
-            className="btn btn--soft"
+            className="vp"
             target="_blank"
             rel="noopener"
-            aria-label="Veluma Wedding, esküvői papíráru, új lapon nyílik"
+            aria-label="Grafikai partnerünk: Veluma Wedding, új lapon nyílik"
           >
-            Veluma<span className="hide-sm">{" "}Wedding</span>
+            <span className="vp-t">Grafikai partnerünk</span>
+            <img src="/veluma-logo.svg" alt="" width="104" height="26" className="vp-logo" />
           </a>
           <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
         </div>

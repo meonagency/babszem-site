@@ -68,13 +68,11 @@ export default function CookieConsent() {
             aria-describedby="cc-desc"
             tabIndex={-1}
           >
-            <h2 id="cc-title">Sütik és adatvédelem</h2>
+            <h2 id="cc-title">Süti beállítások</h2>
             <p id="cc-desc">
-              Az oldal működéséhez szükséges tárolást mindig használjuk. Statisztikai és hirdetési sütiket csak a ti
-              hozzájárulásotokkal engedünk be. A döntésetek az oldal alján bármikor módosítható.
-            </p>
-            <p>
-              <Link href="/adatkezeles" className="cc-link">Adatkezelési tájékoztató</Link>
+              Weboldalunk sütiket használ a megfelelő működés biztosításához, valamint hozzájárulás esetén statisztikai
+              és marketing célokra. A részleteket az{" "}
+              <Link href="/adatkezeles" className="cc-link">Adatkezelési tájékoztatóban</Link> találjátok.
             </p>
             <div className="cc-actions">
               <button type="button" className="cc-btn" onClick={() => choose("all")}>

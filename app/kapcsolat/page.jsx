@@ -7,6 +7,18 @@ export const metadata = {
   title: "Ajánlatkérés és kapcsolat – Babszem Virágműhely",
   description:
     "Esküvői virágdekoráció, csokrok, virágboxok, koszorúk és eszközbérlés. Írd meg, mire lenne szükséged, és hamarosan jelentkezünk.",
+  openGraph: {
+    type: "website",
+    locale: "hu_HU",
+    siteName: "Babszem Virágműhely",
+    title: "Ajánlatkérés és kapcsolat – Babszem Virágműhely",
+    description:
+      "Esküvői virágdekoráció, csokrok, virágboxok, koszorúk és eszközbérlés. Írd meg, mire lenne szükséged, és hamarosan jelentkezünk.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ajánlatkérés és kapcsolat – Babszem Virágműhely",
+  },
 };
 
 export default function KapcsolatPage() {
