@@ -37,6 +37,9 @@ const STRIP = [
 const CSOKROK = ["7140", "6773", "8945", "6637", "8910", "7048", "7564", "8052", "7824"];
 const SZERTARTAS_ROW = ["6867", "6865", "7580", "l230wb"];
 
+/* Soronként egy kép kap nagyobb súlyt, így a szem végigvezethető. */
+const LEAD = [[0, 1.9], [2, 1.7], [1, 1.6], [3, 1.6]];
+
 const VACSORA = [
   { title: "Krém és fehér, meleg fényben", ids: ["9326", "9329", "9316", "8165"] },
   { title: "Bordó és narancs", ids: ["7611", "8900", "8467", "8455"] },
@@ -87,26 +90,23 @@ export default function Home() {
           </picture>
           <div className="hero2-copy">
             <h1 id="hero-title">Esküvői<br />virágdekoráció</h1>
-            <p>Szertartás, vacsorahelyszín és menyasszonyi csokor a ti színeitekkel. Ráckeve, Dömsöd és Budapest.</p>
+            <p>A szertartást, a vacsorahelyszínt és a menyasszonyi csokrot a ti színeitekre szabjuk. Ráckevén, Dömsödön és Budapesten dolgozunk.</p>
             <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
           </div>
         </section>
 
         {/* 2. Négy terület: lépcsőzött képsáv */}
         <section className="sec wrapx" aria-labelledby="eskuvo-title">
-          <header className="chap" data-reveal>
-            <span className="chap-n" aria-hidden="true">01</span>
-            <div>
-              <h2 id="eskuvo-title">Esküvői dekoráció</h2>
-              <p>A szertartástól a vacsoráig egy színvilágra épül minden. Négy területet mutatunk, képekkel.</p>
-            </div>
+          <header className="intro" data-reveal>
+            <h2 id="eskuvo-title">Esküvői dekoráció</h2>
+            <p>A szertartástól a vacsoráig egy színvilág köti össze az egészet. Négy területet mutatunk be képekkel.</p>
           </header>
           <ul className="strip">
             {STRIP.map((s, i) => (
               <li key={s.id} data-reveal style={{ "--d": `${i * 80}ms` }}>
                 <a href={s.href}>
                   <span className="strip-img"><Photo id={s.id} sizes="(min-width: 900px) 22vw, 68vw" /></span>
-                  <span className="cap-t">{s.title}</span>
+                  <span className="cap-t"><span className="cap-n" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>{s.title}</span>
                   <span className="cap-l">{s.line}</span>
                 </a>
               </li>
@@ -116,22 +116,22 @@ export default function Home() {
 
         {/* 3. Egyedi: nagy kép + szöveg */}
         <section className="sec wrapx pair" aria-labelledby="egyedi-title">
-          <figure className="pair-img" data-reveal>
+          <figure className="pair-img" data-reveal="img">
             <Photo id="9364" sizes="(min-width: 900px) 58vw, 100vw" />
           </figure>
           <div className="pair-text" data-reveal style={{ "--d": "120ms" }}>
-            <h2 id="egyedi-title" className="h-lg">Egyedi, a helyszínhez igazítva</h2>
-            <p>Az esküvői dekoráció nem sablonárakra épül. A színeket, a virágokat és a mennyiséget a helyszínhez és a keretösszeghez igazítjuk.</p>
+            <h2 id="egyedi-title" className="h-lg">Minden esküvői dekoráció egyedi</h2>
+            <p>Nem sablonok alapján dolgozunk. A színeket, a virágokat és a mennyiséget a helyszínhez és a keretösszeghez igazítjuk.</p>
             <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
           </div>
         </section>
 
         {/* 4. Csokrok: oszlopos kép-fal */}
         <section className="sec wrapx" id="csokrok" aria-labelledby="csokrok-title">
-          <Chapter n="02" id="csokrok-title" title="Menyasszonyi csokrok" text="Minden csokor a menyasszony ruhájához és a nap színeihez készül." />
+          <Chapter n="01" id="csokrok-title" title="Menyasszonyi csokrok" text="Minden csokor a menyasszony ruhájához és a nap színeihez készül." />
           <ul className="wall">
             {CSOKROK.map((id, i) => (
-              <li key={id} data-reveal style={{ "--d": `${(i % 3) * 70}ms` }}>
+              <li key={id} data-reveal="img" style={{ "--d": `${(i % 3) * 90}ms` }}>
                 <Photo id={id} sizes="(min-width: 900px) 30vw, 48vw" />
               </li>
             ))}
@@ -140,32 +140,32 @@ export default function Home() {
 
         {/* 5. Szertartás: széles kép, négyes sor, pár */}
         <section className="sec wrapx" id="szertartas" aria-labelledby="szertartas-title">
-          <Chapter n="03" id="szertartas-title" title="Szertartás" text="Boldogságkapu, székdíszek és bevonulóút: a tekintet a szertartás helyére vezet." />
-          <figure className="wide" data-reveal>
+          <Chapter n="02" id="szertartas-title" title="Szertartás" text="A boldogságkapu, a székdíszek és a bevonulóút a szertartás helyére vezetik a tekintetet." />
+          <figure className="wide" data-reveal="img">
             <Photo id="7662" sizes="(min-width: 1400px) 1300px, 100vw" />
           </figure>
           <ul className="quad">
             {SZERTARTAS_ROW.map((id, i) => (
-              <li key={id} data-reveal style={{ "--d": `${i * 70}ms` }}>
+              <li key={id} data-reveal="img" style={{ "--d": `${i * 90}ms` }}>
                 <Photo id={id} sizes="(min-width: 900px) 24vw, 48vw" />
               </li>
             ))}
           </ul>
           <div className="duo">
-            <figure className="duo-a" data-reveal><Photo id="6163" sizes="(min-width: 900px) 62vw, 100vw" /></figure>
-            <figure className="duo-b" data-reveal style={{ "--d": "100ms" }}><Photo id="8914" sizes="(min-width: 900px) 30vw, 100vw" /></figure>
+            <figure className="duo-a" data-reveal="img"><Photo id="6163" sizes="(min-width: 900px) 62vw, 100vw" /></figure>
+            <figure className="duo-b" data-reveal="img" style={{ "--d": "120ms" }}><Photo id="8914" sizes="(min-width: 900px) 30vw, 100vw" /></figure>
           </div>
         </section>
 
         {/* 6. Vacsora: négy színvilág, igazított sorok */}
         <section className="sec wrapx" id="vacsora" aria-labelledby="vacsora-title">
-          <Chapter n="04" id="vacsora-title" title="Vacsorahelyszín" text="Főasztal és vendégasztalok négy színvilágban." />
-          {VACSORA.map((g) => (
+          <Chapter n="03" id="vacsora-title" title="Vacsorahelyszín" text="A főasztal és a vendégasztalok négy színvilágban készülnek." />
+          {VACSORA.map((g, gi) => (
             <div className="story" key={g.title}>
               <h3 data-reveal>{g.title}</h3>
               <div className="rowj">
                 {g.ids.map((id, i) => (
-                  <figure key={id} data-reveal style={{ "--r": ratio(id), "--d": `${i * 70}ms` }}>
+                  <figure key={id} data-reveal="img" style={{ "--r": (ratio(id) * (LEAD[gi][0] === i ? LEAD[gi][1] : 1)).toFixed(3), "--d": `${i * 90}ms` }}>
                     <Photo id={id} sizes="(min-width: 900px) 30vw, 48vw" />
                   </figure>
                 ))}
@@ -177,10 +177,10 @@ export default function Home() {
         {/* 7. Kiegészítők: hétcellás képrács, árnyalt háttéren */}
         <section className="sec sec--tint" id="kiegeszitok" aria-labelledby="kieg-title">
           <div className="wrapx">
-            <Chapter n="05" id="kieg-title" title="Virágos kiegészítők" text="Kitűző, csuklódísz, hajdísz és kis csokrok, a csokorral azonos színekben." />
+            <Chapter n="04" id="kieg-title" title="Virágos kiegészítők" text="A kitűző, a csuklódísz, a hajdísz és a kis csokrok a csokorral azonos színekben készülnek." />
             <ul className="bento">
               {BENTO.map((id, i) => (
-                <li key={id} className={`b${i + 1}`} data-reveal style={{ "--d": `${(i % 3) * 70}ms` }}>
+                <li key={id} className={`b${i + 1}`} data-reveal="img" style={{ "--d": `${(i % 3) * 90}ms` }}>
                   <Photo id={id} sizes="(min-width: 900px) 34vw, 50vw" />
                 </li>
               ))}
@@ -192,9 +192,9 @@ export default function Home() {
         <section className="closing" aria-labelledby="zaras-title">
           <Photo id="5twu8m" sizes="100vw" className="closing-img" />
           <div className="closing-copy" data-reveal>
-            <h2 id="zaras-title" className="h-lg">Kérjetek egyedi ajánlatot</h2>
-            <p>Írjátok meg a dátumot, a helyszínt és az elképzeléseiteket. Két héten belül személyre szabott ajánlatot küldünk.</p>
-            <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
+            <h2 id="zaras-title" className="h-lg">Ez a ti napotok.<br />Mi szeretettel virágba öltöztetjük.</h2>
+            <p>Írjátok meg a dátumot, a helyszínt és az elképzeléseiteket, hogy minden szirom rólatok szóljon. Két héten belül személyre szabott ajánlatot küldünk.</p>
+            <a href="/kapcsolat" className="btn btn--lg">Meséljetek a ti napotokról</a>
             <p className="closing-note">Csokorra, virágboxra és koszorúra ugyanezen az űrlapon lehet érdeklődni.</p>
           </div>
         </section>
