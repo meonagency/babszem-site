@@ -151,13 +151,14 @@ export const KIEMELT_OLDALRA = [
 export const VELUMA = {
   folder: "1K3GwRboyXLYtY_XDm34KLDK2pR_18QS3",
   url: "veluma.hu",
-  eyebrow: "EGYÜTTMŰKÖDŐ PARTNERÜNK",
+  eyebrow: "AJÁNLOTT PARTNERÜNK",
   title: "Veluma Wedding",
-  lead: "A Veluma Wedding esküvői papíráru-stúdió. Meghívót, ültetőkártyát, menükártyát, asztalszámot és üdvözlőtáblát készít egyedi tervezéssel.",
-  items: ["Meghívó", "Ültetési rend", "Ültetőkártya", "Menükártya", "Asztalszám", "Üdvözlőtábla"],
-  note: "Az ajánlatunk a dekorációt tartalmazza, a papíráru nem része. Ha papírárut is szeretnétek, a veluma.hu oldalon megnézhetitek a munkáikat, és közvetlenül is megkereshetitek őket.",
+  lead: "Esküvői papíráru-stúdió, amellyel együtt dolgozunk. Egyedi tervezéssel, egységes megjelenéssel készítik el az esküvő papíráruit, a dekorációnkhoz illeszkedve.",
+  items: ["Meghívó", "Ültetési rend", "Ültetőkártya", "Italkártya", "Menükártya", "Üdvözlőtábla"],
+  note: "Ajánlatunk a dekorációt tartalmazza, a papíráru nem része. Ha papíráruban is gondolkodtok, a veluma.hu oldalon megnézhetitek a munkáit. Ha a mi ajánlásunkkal keresitek meg őket, egyedi, az alkalomhoz illő asztalszámot kaptok ajándékba, és az esküvő napján a kiszállás díjmentes.",
+  contact: "veluma.hu  ·  info@veluma.hu  ·  @velumawedding",
   // fájlnév-tétel → képfelirat
-  labels: { meghivo: "Meghívó", szett: "Papíráru-szett", ultetokartya: "Ültetőkártya", menukartya: "Menükártya", asztalszam: "Asztalszám", welcome: "Üdvözlőtábla", ultetesrend: "Ültetési rend" },
+  labels: { meghivo: "Meghívó", szett: "Meghívó-szett", ultetokartya: "Ültetőkártya", menukartya: "Italkártya", asztalszam: "Asztalszám", welcome: "Üdvözlőtábla", ultetesrend: "Ültetési rend" },
 };
 
 export const ALL_FOLDERS = [...new Set([BORITO_FOLDER, VELUMA.folder, ...Object.values(ITEMS).map((i) => i.folder)])];

@@ -327,7 +327,7 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
     .join("")}</div>
   <p class="vel-items">${VELUMA.items.map(esc).join(" &nbsp;·&nbsp; ")}</p>
   <div class="box"><p>${esc(VELUMA.note)}</p></div>
-  <p class="vel-url">${esc(VELUMA.url)}</p>
+  <p class="vel-url">${esc(VELUMA.contact)}</p>
 </section>`
     : "";
 
@@ -556,7 +556,7 @@ figcaption { font-family:Cinzel,serif; font-size:6.4pt; letter-spacing:.22em; co
 .vel-grid figure { display:flex; flex-direction:column; min-height:0; }
 .vel-grid figure img { flex:1; min-height:0; }
 .vel-items { font-family:Cinzel,serif; font-size:7.4pt; letter-spacing:.18em; color:var(--gold-deep); text-transform:uppercase; margin:0 0 5mm !important; }
-.vel-url { font-family:Cinzel,serif; letter-spacing:.2em; font-size:9pt; color:var(--gold-deep); margin-top:4mm !important; }
+.vel-url { font-family:Cinzel,serif; letter-spacing:.1em; font-size:8pt; color:var(--gold-deep); margin-top:4mm !important; }
 ul.dots { list-style:none; columns:2; column-gap:8mm; margin-top:3mm; }
 ul.dots li { padding-left:4mm; position:relative; margin-bottom:1.8mm; break-inside:avoid; }
 ul.dots li::before { content:""; position:absolute; left:0; top:2.1mm; width:1.4mm; height:1.4mm; background:var(--gold-mid); transform:rotate(45deg); }
