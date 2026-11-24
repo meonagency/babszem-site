@@ -109,8 +109,7 @@ html:has(.home) { scroll-behavior: auto; }
   inset: 0;
   background:
     linear-gradient(to top, rgba(30, 18, 8, 0.7) 0%, rgba(30, 18, 8, 0.22) 42%, rgba(30, 18, 8, 0) 68%),
-    linear-gradient(to right, rgba(30, 18, 8, 0.38) 0%, rgba(30, 18, 8, 0) 58%),
-    linear-gradient(118deg, rgba(255, 214, 150, 0.2) 0%, rgba(255, 214, 150, 0.06) 28%, rgba(255, 214, 150, 0) 46%);
+    linear-gradient(to right, rgba(30, 18, 8, 0.38) 0%, rgba(30, 18, 8, 0) 58%);
 }
 .hero2-copy {
   position: absolute;
@@ -185,6 +184,8 @@ html:has(.home) { scroll-behavior: auto; }
     grid-auto-flow: column;
     grid-auto-columns: 68%;
     overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     margin-inline: calc(-1 * clamp(16px, 4vw, 56px));
     padding-inline: clamp(16px, 4vw, 56px);
@@ -214,18 +215,17 @@ html:has(.home) { scroll-behavior: auto; }
 @media (max-width: 899px) { .wall { columns: 2; } }
 
 /* Szertartás */
-.wide { aspect-ratio: 16 / 8; margin-bottom: var(--gap); }
+.home .wide { aspect-ratio: 16 / 8; margin-bottom: var(--gap); }
 .wide .ph { object-position: 50% 62%; }
 .quad { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gap); margin-bottom: var(--gap); }
 .quad li { aspect-ratio: 3 / 4; }
-.duo { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--gap); align-items: end; }
-.duo-a { grid-column: 1 / span 8; aspect-ratio: 4 / 3; }
-.duo-b { grid-column: 9 / span 4; aspect-ratio: 2 / 3; }
+.duo { display: flex; gap: var(--gap); }
+.duo figure { flex: var(--r, 1) 1 0%; min-width: 0; aspect-ratio: var(--r, 1); }
 @media (max-width: 899px) {
   .wide { aspect-ratio: 4 / 3; }
   .quad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .duo-a, .duo-b { grid-column: 1 / -1; }
-  .duo-b { aspect-ratio: 3 / 4; }
+  .duo { flex-direction: column; }
+  .duo figure { flex: none; width: 100%; }
 }
 
 /* Vacsora: igazított sorok (egy sorban azonos magasság) */
@@ -309,37 +309,6 @@ html:has(.home) { scroll-behavior: auto; }
   [data-reveal="img"][data-rv="0"] .ph { clip-path: inset(0 0 100% 0); transform: scale(1.12); }
   [data-reveal="img"][data-rv="1"] .ph { clip-path: inset(0 0 0 0); transform: none; }
 
-  /* fénycsík: egyetlen, minden képen azonos, széles és lágy áthúzás, belépéskor */
-  [data-reveal="img"]::after,
-  .strip-img::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(105deg, rgba(255, 226, 170, 0) 30%, rgba(255, 226, 170, 0.26) 50%, rgba(255, 226, 170, 0) 70%);
-    background-size: 300% 100%;
-    background-position: 130% 0;
-    opacity: 0;
-  }
-  [data-reveal="img"][data-rv="1"]::after,
-  [data-rv="1"] .strip-img::after {
-    animation: sheen 2.4s cubic-bezier(0.25, 0.6, 0.2, 1) both;
-    animation-delay: calc(var(--d, 0ms) + 500ms);
-  }
-  .strip-img { position: relative; overflow: hidden; }
-
-  /* nyitókép: ráközelítés és egyszeri fényáthúzás */
-  .hero2::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background: linear-gradient(105deg, rgba(255, 226, 170, 0) 30%, rgba(255, 226, 170, 0.22) 50%, rgba(255, 226, 170, 0) 70%);
-    background-size: 300% 100%;
-    animation: sheen 3.2s cubic-bezier(0.25, 0.6, 0.2, 1) 0.9s both;
-  }
-
   /* finom emelkedés mutatóeszközön */
   @media (hover: hover) {
     [data-reveal="img"]:hover .ph { transform: scale(1.03); transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -353,7 +322,6 @@ html:has(.home) { scroll-behavior: auto; }
     .home-head .logo-inline-mark { animation: markIn linear both; animation-timeline: scroll(root); animation-range: 0 180px; }
   }
 }
-@keyframes sheen { 0% { background-position: 130% 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { background-position: -30% 0; opacity: 0; } }
 @keyframes parHero { from { transform: translateY(0); } to { transform: translateY(6%); } }
 @keyframes parClose { from { transform: translateY(4%); } to { transform: translateY(-4%); } }
 @keyframes headIn { from { height: 68px; box-shadow: 0 10px 30px -22px rgba(60, 40, 20, 0); } to { height: 58px; box-shadow: 0 10px 30px -22px rgba(60, 40, 20, 0.35); } }

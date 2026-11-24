@@ -152,8 +152,8 @@ export default function Home() {
             ))}
           </ul>
           <div className="duo">
-            <figure className="duo-a" data-reveal="img"><Photo id="6163" sizes="(min-width: 900px) 62vw, 100vw" /></figure>
-            <figure className="duo-b" data-reveal="img" style={{ "--d": "120ms" }}><Photo id="8914" sizes="(min-width: 900px) 30vw, 100vw" /></figure>
+            <figure data-reveal="img" style={{ "--r": ratio("6163") }}><Photo id="6163" sizes="(min-width: 900px) 60vw, 100vw" /></figure>
+            <figure data-reveal="img" style={{ "--r": ratio("8914"), "--d": "120ms" }}><Photo id="8914" sizes="(min-width: 900px) 32vw, 100vw" /></figure>
           </div>
         </section>
 
