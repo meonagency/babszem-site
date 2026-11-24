@@ -33,12 +33,15 @@ export default function CookieConsent() {
     if (!visible) return;
     let timer;
     const start = () => {
-      const imgs = [...document.querySelectorAll('img[loading="lazy"]')];
+      const conn = navigator.connection;
+      if (conn && (conn.saveData || /(^|-)(2g|3g)$/.test(conn.effectiveType || ""))) return;
+      // csak a következő néhány képernyő képei, hogy a döntés előtt se terheljük a hálózatot
+      const imgs = [...document.querySelectorAll('img[loading="lazy"]')].slice(0, 12);
       let i = 0;
       timer = setInterval(() => {
-        for (let k = 0; k < 4 && i < imgs.length; k++, i++) imgs[i].loading = "eager";
+        for (let k = 0; k < 2 && i < imgs.length; k++, i++) imgs[i].loading = "eager";
         if (i >= imgs.length) clearInterval(timer);
-      }, 500);
+      }, 600);
     };
     if (document.readyState === "complete") start();
     else window.addEventListener("load", start, { once: true });

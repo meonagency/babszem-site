@@ -26,7 +26,14 @@ const securityHeaders = [
 const nextConfig = {
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    // A képek és a logó neve a méretet tartalmazza: 30 napig gyorsítótárazhatók, utána háttérben frissülnek
+    const staticCache = [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=604800" }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      { source: "/fotok/:path*", headers: staticCache },
+      { source: "/veluma/:path*", headers: staticCache },
+      { source: "/veluma-logo.svg", headers: staticCache },
+    ];
   },
   // Ajánlatgenerátor: a Chromium bináris ne kerüljön a bundle-be, a betűk menjenek a függvénnyel
   serverExternalPackages: ["@sparticuz/chromium", "puppeteer-core"],
