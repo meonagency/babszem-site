@@ -145,7 +145,22 @@ export const KIEMELT_OLDALRA = [
   "Egyéb szertartásdekoráció", "Templomi dekoráció", "Borító",
 ];
 
-export const ALL_FOLDERS = [...new Set([BORITO_FOLDER, ...Object.values(ITEMS).map((i) => i.folder)])];
+// Veluma Wedding (partner): papíráru-fotók az ajánlat utolsó oldalán.
+// Drive: Képtár / 90 Veluma partner (papíráru). Fájlnév: veluma_{tétel}_{színek}_{sorszám}.jpg (a színek a közös színtábla kulcsai).
+// A Make Drive-lekérdezésében ennek a mappának is szerepelnie kell, különben a blokk elmarad (kép nélkül nem jelenik meg).
+export const VELUMA = {
+  folder: "1K3GwRboyXLYtY_XDm34KLDK2pR_18QS3",
+  url: "veluma.hu",
+  eyebrow: "EGYÜTTMŰKÖDŐ PARTNERÜNK",
+  title: "Veluma Wedding",
+  lead: "A Veluma Wedding esküvői papíráru-stúdió. Meghívót, ültetőkártyát, menükártyát, asztalszámot és üdvözlőtáblát készít egyedi tervezéssel.",
+  items: ["Meghívó", "Ültetési rend", "Ültetőkártya", "Menükártya", "Asztalszám", "Üdvözlőtábla"],
+  note: "Az ajánlatunk a dekorációt tartalmazza, a papíráru nem része. Ha papírárut is szeretnétek, a veluma.hu oldalon megnézhetitek a munkáikat, és közvetlenül is megkereshetitek őket.",
+  // fájlnév-tétel → képfelirat
+  labels: { meghivo: "Meghívó", szett: "Papíráru-szett", ultetokartya: "Ültetőkártya", menukartya: "Menükártya", asztalszam: "Asztalszám", welcome: "Üdvözlőtábla", ultetesrend: "Ültetési rend" },
+};
+
+export const ALL_FOLDERS = [...new Set([BORITO_FOLDER, VELUMA.folder, ...Object.values(ITEMS).map((i) => i.folder)])];
 
 export const TEXTS = {
   intro: [

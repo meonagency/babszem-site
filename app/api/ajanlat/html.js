@@ -4,7 +4,7 @@ import { megszolitas } from "./megszolitas.js";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { MARK, MARK_VIEWBOX } from "../../mark";
-import { SECTIONS, ITEMS, UPSELL, KIEMELT, KIEMELT_OLDALRA, BORITO_FOLDER, TEXTS, CONTACT } from "./katalogus";
+import { SECTIONS, ITEMS, UPSELL, KIEMELT, KIEMELT_OLDALRA, BORITO_FOLDER, TEXTS, CONTACT, VELUMA } from "./katalogus";
 import { DECOR_GROUPS, SEASONAL, PREMIUM } from "../../kapcsolat/fields";
 import { fileColorKey, requestedColorKeys } from "../../szinek";
 import { KEPCIMKEK } from "./kepcimkek";
@@ -45,6 +45,50 @@ const listOf = (v) =>
 // Pontozás sorrendje (a súlyokból következik): kézi felülírás > kerülendő virág > szín > kedvenc virág > forma > szezon/ár kategória > sorszám.
 // Egy helyen állítható; a szín egy találata legalább annyit ér, mint a kedvenc virágok együtt (legfeljebb 2 virág számít).
 export const WEIGHTS = { prefer: 1000, avoid: -15, color: 10, flower: 5, flowerMax: 2, shape: 4, category: 2, mixed: 2 };
+
+/** Veluma-fájlnév → { tetel, colors } a "veluma_{tétel}_{színek}_{sorszám}.jpg" minta szerint. Más név: null. */
+export function parseVeluma(name) {
+  const parts = norm(name).replace(IMAGE_RE, "").split("_");
+  if (parts[0] !== "veluma") return null;
+  return { tetel: parts[1] || "", colors: [...new Set((parts[2] || "").split("-").filter(Boolean).map(fileColorKey))] };
+}
+
+const hash = (str) => [...String(str)].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
+
+/**
+ * Veluma-blokk: legfeljebb 3 kép a "90 Veluma partner" mappából, a pár színei szerint.
+ * Pontozás: színtalálat (WEIGHTS.color) > azonos pontszámnál az ajánlat azonosítójából képzett, stabil sorrend (így nem mindenkinél ugyanaz a három kép).
+ * Válogatás: előbb tételenként (szett, meghívó, ültetőkártya…) a legjobb, hogy a három kép ne ugyanazt mutassa; a hiányt a következő legjobbak töltik.
+ */
+export function pickVeluma(offer, images) {
+  const colorList = listOf(offer.colors);
+  const colors = requestedColorKeys(colorList);
+  const wantsMixed = colorList.some((c) => norm(c) === "szines");
+  const seed = String(offer.id || offer.name || "");
+  const ranked = images
+    .filter((f) => (f.parents || []).includes(VELUMA.folder))
+    .map((f) => ({ f, p: parseVeluma(f.name) }))
+    .filter((x) => x.p && VELUMA.labels[x.p.tetel]) // a "hangulat" és ismeretlen tételek nem papíráru-képek
+    .map((x) => ({
+      ...x,
+      score: WEIGHTS.color * x.p.colors.filter((c) => colors.has(c)).length + (wantsMixed && x.p.colors.length >= 3 ? WEIGHTS.mixed : 0),
+      tie: hash(seed + x.f.name),
+    }))
+    .sort((a, b) => b.score - a.score || a.tie - b.tie);
+  const picked = [];
+  const tetelek = new Set();
+  for (const x of ranked) {
+    if (picked.length >= 3) break;
+    if (tetelek.has(x.p.tetel)) continue;
+    tetelek.add(x.p.tetel);
+    picked.push(x);
+  }
+  for (const x of ranked) {
+    if (picked.length >= 3) break;
+    if (!picked.includes(x)) picked.push(x);
+  }
+  return { images: picked.map((x) => ({ file: x.f, label: VELUMA.labels[x.p.tetel] })) };
+}
 
 export function plan(offer, files, overrides = {}) {
   const prefer = new Set(listOf(overrides.prefer).map(norm));
@@ -165,7 +209,7 @@ export function plan(offer, files, overrides = {}) {
   for (let i = 0; upImages.length < 3; i++) upImages.push({ file: null, label: upItems[i % upItems.length].label });
   const upsell = { items: upItems.map(({ pool, folder, requested, ...rest }) => rest), images: upImages };
 
-  return { cover, sections, upsell, mood };
+  return { cover, sections, upsell, mood, veluma: pickVeluma(offer, images) };
 }
 
 // ---------- megjelenítés ----------
@@ -270,6 +314,23 @@ export function buildHtml({ offer, planned, imgs, prices = {}, validUntil }) {
     })
     .join("\n");
 
+  // Veluma-partneroldal (az ajánlat utolsó oldala): csak akkor jelenik meg, ha van hozzá kép (a Make Drive-listájában szerepel a Veluma mappa és a letöltés sikerült)
+  const velImgs = (planned.veluma?.images || []).filter((x) => x.file && imgs[x.file.id]);
+  const veluma = velImgs.length
+    ? `<section class="flow veluma">
+  ${runHead}
+  <div class="eyebrow">${esc(VELUMA.eyebrow)}</div>
+  <h2 class="vel-title">${esc(VELUMA.title)}</h2>
+  <p class="lead">${esc(VELUMA.lead)}</p>
+  <div class="vel-grid vel-n${velImgs.length}">${velImgs
+    .map((x, i) => `<figure class="v${i + 1}"><img src="${imgs[x.file.id]}" alt=""><figcaption>${esc(x.label)}</figcaption></figure>`)
+    .join("")}</div>
+  <p class="vel-items">${VELUMA.items.map(esc).join(" &nbsp;·&nbsp; ")}</p>
+  <div class="box"><p>${esc(VELUMA.note)}</p></div>
+  <p class="vel-url">${esc(VELUMA.url)}</p>
+</section>`
+    : "";
+
   return `<!doctype html><html lang="hu"><head><meta charset="utf-8"><title>Ajánlat – ${esc(name)}</title>
 <style>${fonts()}${CSS}</style></head><body>
 
@@ -354,6 +415,7 @@ ${sectionPages}
     </div>
   </div>
 </section>
+${veluma}
 <script>
 window.addEventListener("load",function(){
   var MM=96/25.4,Q=2.2;
@@ -480,6 +542,21 @@ figcaption { font-family:Cinzel,serif; font-size:6.4pt; letter-spacing:.22em; co
 .tri img { display:block; width:100%; height:128mm; object-fit:cover; }
 .tri p { color:var(--muted); font-size:8.6pt; margin-top:1.5mm; }
 
+.veluma .eyebrow { margin-top:2mm; }
+.vel-title { font-size:20pt; letter-spacing:.08em; color:var(--gold-deep); margin:2mm 0 0; }
+.vel-grid { display:grid; gap:3mm; margin:2mm 0 6mm; }
+.vel-grid figure { margin:0; }
+.vel-grid img { display:block; width:100%; height:100%; object-fit:cover; }
+.vel-grid.vel-n3 { grid-template-columns:1.25fr 1fr; grid-template-rows:75mm 75mm; }
+.vel-grid.vel-n3 .v1 { grid-row:1 / 3; }
+.vel-grid.vel-n3 figure { display:flex; flex-direction:column; }
+.vel-grid.vel-n3 img { flex:1; min-height:0; }
+.vel-grid.vel-n2 { grid-template-columns:1fr 1fr; grid-template-rows:120mm; }
+.vel-grid.vel-n1 { grid-template-columns:1fr; grid-template-rows:150mm; }
+.vel-grid figure { display:flex; flex-direction:column; min-height:0; }
+.vel-grid figure img { flex:1; min-height:0; }
+.vel-items { font-family:Cinzel,serif; font-size:7.4pt; letter-spacing:.18em; color:var(--gold-deep); text-transform:uppercase; margin:0 0 5mm !important; }
+.vel-url { font-family:Cinzel,serif; letter-spacing:.2em; font-size:9pt; color:var(--gold-deep); margin-top:4mm !important; }
 ul.dots { list-style:none; columns:2; column-gap:8mm; margin-top:3mm; }
 ul.dots li { padding-left:4mm; position:relative; margin-bottom:1.8mm; break-inside:avoid; }
 ul.dots li::before { content:""; position:absolute; left:0; top:2.1mm; width:1.4mm; height:1.4mm; background:var(--gold-mid); transform:rotate(45deg); }
