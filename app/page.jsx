@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import "./home.css";
 import { BrandMark } from "./Logo";
 import { F, photoProps } from "./fotok";
@@ -34,7 +35,7 @@ const STRIP = [
   { id: "7833", href: "#csokrok", title: "Menyasszonyi csokrok", line: "Omló, gömbölyű és vadvirágos formák" },
   { id: "6868", href: "#szertartas", title: "Szertartás", line: "Boldogságkapu, székdísz, bevonulóút" },
   { id: "8895", href: "#vacsora", title: "Vacsorahelyszín", line: "Főasztal, vendégasztalok, fényfüggöny" },
-  { id: "9297", href: "#kiegeszitok", title: "Virágos kiegészítők", line: "Kitűző, csuklódísz, hajdísz" },
+  { id: "9297", href: "#kiegeszitok", title: "Kiegészítők", line: "Kitűző, csuklódísz, hajdísz" },
 ];
 
 const CSOKROK = ["7140", "6773", "8945", "6637", "8910", "7048", "7564", "8052", "7824"];
@@ -77,20 +78,24 @@ export default function Home() {
           <span aria-hidden="true">BABSZEM</span>
         </a>
         <nav className="home-nav" aria-label="Főmenü">
-          {NAV.map((n) => (
-            <a key={n.href} href={n.href}>{n.label}</a>
+          {NAV.map((n, i) => (
+            <Fragment key={n.href}>
+              {i === 2 && (
+                <a
+                  href={VELUMA_URL}
+                  className="vp"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Veluma Wedding, grafikai partnerünk, új lapon nyílik"
+                >
+                  <span className="vl" aria-hidden="true" />
+                </a>
+              )}
+              <a href={n.href} className="nl">{n.label}</a>
+            </Fragment>
           ))}
         </nav>
         <div className="head-cta">
-          <a
-            href={VELUMA_URL}
-            className="vp"
-            target="_blank"
-            rel="noopener"
-            aria-label="Veluma Wedding, grafikai partnerünk, új lapon nyílik"
-          >
-            <span className="vl" aria-hidden="true" />
-          </a>
           <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
         </div>
       </header>
@@ -211,7 +216,7 @@ export default function Home() {
         {/* 7. Kiegészítők: hétcellás képrács, árnyalt háttéren */}
         <section className="sec sec--tint" id="kiegeszitok" aria-labelledby="kieg-title">
           <div className="wrapx">
-            <Chapter n="04" id="kieg-title" title="Virágos kiegészítők" text="A kitűző, a csuklódísz, a hajdísz és a kis csokrok a csokorral azonos színekben készülnek." />
+            <Chapter n="04" id="kieg-title" title="Kiegészítők" text="A kitűző, a csuklódísz, a hajdísz és a kis csokrok a csokorral azonos színekben készülnek." />
             <ul className="bento">
               {BENTO.map((id, i) => (
                 <li key={id} className={`b${i + 1}`} data-reveal="img" style={{ "--d": `${(i % 3) * 90}ms` }}>

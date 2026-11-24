@@ -83,10 +83,12 @@ html:has(.home) { scroll-behavior: auto; }
   color: var(--gold);
 }
 .logo-inline-mark { height: 36px; width: 25px; }
-.home-nav { display: none; gap: clamp(20px, 2.4vw, 40px); font-family: var(--font-display); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; }
+.home-nav { display: contents; gap: clamp(20px, 2.4vw, 40px); font-family: var(--font-display); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; }
 .home-nav a { color: var(--ink); transition: color 0.2s ease; }
 .home-nav a:hover { color: var(--gold-ink); }
-@media (min-width: 1100px) { .home-nav { display: flex; } }
+/* Mobil és tablet: a menüpontok rejtettek, csak a Veluma látszik (a fejléc rácsában) */
+.home-nav .nl { display: none; }
+@media (min-width: 1100px) { .home-nav { display: flex; align-items: center; } .home-nav .nl { display: inline; } }
 
 /* Mobil és tablet: Veluma balra, Babszem logó középen, Ajánlatkérés jobbra */
 .home-head .logo-inline { grid-column: 2; grid-row: 1; }
@@ -96,12 +98,10 @@ html:has(.home) { scroll-behavior: auto; }
 .home .vp:hover { color: var(--ink); }
 .vp .vl { width: 66px; }
 @media (min-width: 1100px) {
-  .home-head { display: flex; gap: 24px; }
-  /* Asztalon a Veluma a menüpontok sorában, a Kiegészítők mellett áll */
-  .head-cta { display: contents; }
-  .home-nav { margin-left: auto; }
-  .home .vp { grid-column: auto; justify-self: auto; margin-left: calc(clamp(20px, 2.4vw, 40px) - 24px); }
-  .head-cta .btn { margin-left: auto; justify-self: auto; }
+  .home-head { display: flex; justify-content: space-between; gap: 24px; }
+  .head-cta { display: flex; align-items: center; gap: 22px; }
+  /* Asztalon a Veluma a menü sorában áll, a Szertartás és a Vacsora között */
+  .home .vp { grid-column: auto; justify-self: auto; }
   .vp .vl { width: 82px; }
 }
 @media (max-width: 599px) {
