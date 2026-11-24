@@ -24,6 +24,12 @@ export default function Adatkezeles() {
           bármikor visszavonhatod.
         </p>
         <p>
+          A weboldal jelenleg nem használ statisztikai vagy hirdetési sütit. A sütibeállításodat a böngésződ helyi
+          tárolójában (localStorage) őrizzük tizenkét hónapig, hogy ne kelljen minden látogatáskor újra dönteni.
+          A döntést az oldal alján, a „Süti beállítások” hivatkozásra kattintva bármikor módosíthatod. A felugró
+          ajánlatkérő ablak megjelenését csak a böngésző munkamenetében jegyezzük meg.
+        </p>
+        <p>
           A részletes tájékoztató hamarosan felkerül. Addig is kérdéssel vagy az adataid törlésével
           kapcsolatban írj a <a href="mailto:babszemviragmuhely@gmail.com">babszemviragmuhely@gmail.com</a> címre.
         </p>

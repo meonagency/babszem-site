@@ -2,6 +2,10 @@ import "./home.css";
 import { BrandMark } from "./Logo";
 import { F, photoProps } from "./fotok";
 import RevealInit from "./RevealInit";
+import { CookieSettingsButton } from "./CookieConsent";
+
+const VELUMA_URL =
+  "https://veluma.hu/?utm_source=babszem-viragmuhely&utm_medium=referral&utm_campaign=partner-2026&utm_content=weboldal";
 
 /* Főoldal: editorial fotósor. Stílus: Cinzel + Jost, arany/krém (a logócsomag
    színei), éles képélek, pill gombok. Minden kép a public/fotok mappából jön. */
@@ -78,7 +82,18 @@ export default function Home() {
             <a key={n.href} href={n.href}>{n.label}</a>
           ))}
         </nav>
-        <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
+        <div className="head-cta">
+          <a
+            href={VELUMA_URL}
+            className="btn btn--soft"
+            target="_blank"
+            rel="noopener"
+            aria-label="Veluma Wedding, esküvői papíráru, új lapon nyílik"
+          >
+            Veluma<span className="hide-sm">{" "}Wedding</span>
+          </a>
+          <a href="/kapcsolat" className="btn">Ajánlatkérés</a>
+        </div>
       </header>
 
       <main id="top">
@@ -194,7 +209,7 @@ export default function Home() {
           <div className="closing-copy" data-reveal>
             <h2 id="zaras-title" className="h-lg">Ez a ti napotok.<br />Mi szeretettel virágba öltöztetjük.</h2>
             <p>Írjátok meg a dátumot, a helyszínt és az elképzeléseiteket, hogy minden szirom rólatok szóljon. Két héten belül személyre szabott ajánlatot küldünk.</p>
-            <a href="/kapcsolat" className="btn btn--lg">Meséljetek a ti napotokról</a>
+            <a href="/kapcsolat" className="btn btn--lg">Kérjetek ajánlatot</a>
             <p className="closing-note">Csokorra, virágboxra és koszorúra ugyanezen az űrlapon lehet érdeklődni.</p>
           </div>
         </section>
@@ -218,6 +233,7 @@ export default function Home() {
                 <a href="https://www.facebook.com/babszemviragmuhely/" rel="noopener">Facebook</a>
               </span>
             </div>
+            <CookieSettingsButton className="foot-link" />
           </nav>
           <span className="partner">
             <a href="https://meonagency.com" rel="noopener">Digitális partner: MeOn Agency</a>

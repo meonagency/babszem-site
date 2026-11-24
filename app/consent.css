@@ -1,0 +1,83 @@
+/* Süti-hozzájárulás és ajánlatkérő felugró ablak. Alakrendszer: éles sarkú kártya, pill gombok. */
+[data-overlay-root] { font-family: var(--font-body); color: var(--ink); }
+[data-overlay-root] h2 { font-family: var(--font-display); font-weight: 400; margin: 0; }
+[data-overlay-root] p { margin: 0; }
+[data-overlay-root] a { border-bottom: 0; padding-bottom: 0; }
+[data-overlay-root] :is(button, a):focus-visible { outline: 2px solid #96601a; outline-offset: 3px; }
+[data-overlay-root] button { font: inherit; }
+
+/* Süti-hozzájárulás */
+.cc-backdrop {
+  position: fixed; inset: 0; z-index: 100;
+  display: grid; place-items: center; padding: 20px;
+  background: rgba(250, 246, 239, 0.7);
+}
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .cc-backdrop { background: rgba(250, 246, 239, 0.38); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+}
+.cc-card {
+  width: min(520px, 100%); max-height: calc(100dvh - 40px); overflow: auto;
+  background: #fffdf9; padding: clamp(24px, 4.5vw, 44px);
+  box-shadow: 0 34px 80px -34px rgba(58, 44, 30, 0.5), 0 2px 12px rgba(58, 44, 30, 0.08);
+  outline: 0;
+}
+.cc-card h2 { font-size: clamp(19px, 2.4vw, 24px); letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.25; margin-bottom: 16px; }
+.cc-card p { color: var(--muted); line-height: 1.65; font-size: 16px; }
+.cc-card p + p { margin-top: 12px; }
+.cc-link { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.cc-actions { display: grid; gap: 12px; margin-top: 26px; }
+.cc-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 50px; padding: 12px 22px; border: 0; border-radius: 999px; cursor: pointer;
+  background: #96601a; color: #fff; font-weight: 450; letter-spacing: 0.02em; line-height: 1.2;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+.cc-btn:hover { background: #7a4d12; }
+.cc-btn--alt { background: #efe6d6; color: var(--ink); }
+.cc-btn--alt:hover { background: #e4d8c3; }
+.cc-btn:active { transform: translateY(1px); }
+
+/* Ajánlatkérő felugró ablak */
+.op-backdrop {
+  position: fixed; inset: 0; z-index: 90;
+  display: grid; place-items: center; padding: 20px;
+  background: rgba(40, 28, 16, 0.42);
+}
+.op-card {
+  position: relative; width: min(760px, 100%); max-height: calc(100dvh - 40px); overflow: auto;
+  display: grid; grid-template-columns: 5fr 6fr;
+  background: #fffdf9; outline: 0;
+  box-shadow: 0 40px 90px -36px rgba(30, 18, 8, 0.6);
+}
+.op-photo { min-height: 100%; background: #e9dfce; }
+.op-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.op-body { display: grid; align-content: center; justify-items: start; gap: 14px; padding: clamp(28px, 4.5vw, 48px); }
+.op-body h2 { font-size: clamp(26px, 3.2vw, 38px); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.15; }
+.op-lead { font-family: var(--font-display); font-size: 17px; letter-spacing: 0.04em; color: var(--ink); }
+.op-body p { color: var(--muted); line-height: 1.65; }
+.op-cta {
+  display: inline-flex; align-items: center; justify-content: center; margin-top: 8px;
+  min-height: 52px; padding: 14px 32px; border-radius: 999px; white-space: nowrap;
+  background: #96601a; color: #fff; font-size: 17px; font-weight: 450; letter-spacing: 0.02em;
+  transition: background 0.25s ease, transform 0.15s ease;
+}
+.op-cta:hover { background: #7a4d12; color: #fff; }
+.op-later { background: none; border: 0; padding: 8px 0; cursor: pointer; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.op-x {
+  position: absolute; top: 8px; right: 10px; width: 44px; height: 44px; border: 0; border-radius: 999px;
+  background: transparent; color: var(--ink); font-size: 28px; line-height: 1; cursor: pointer;
+}
+.op-x:hover { background: #efe6d6; }
+@media (max-width: 719px) {
+  .op-card { grid-template-columns: 1fr; }
+  .op-photo { height: clamp(130px, 28vh, 200px); min-height: 0; }
+  .op-photo img { object-position: 50% 30%; }
+  .op-x { background: rgba(255, 253, 249, 0.9); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cc-backdrop, .op-backdrop { animation: ovFade 0.5s ease both; }
+  .cc-card, .op-card { animation: ovRise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
+}
+@keyframes ovFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ovRise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }

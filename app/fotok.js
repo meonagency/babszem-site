@@ -1,6 +1,6 @@
 // Generált a public/fotok/manifest.json alapján. Méretek: webp, szélesség szerint.
 export const F = {
-  "7625": { w: 4032, h: 3024, sizes: [480, 960, 1440, 2200], alt: "Főasztal bordó és narancs virágkompozíciója, oldalnézetből" },
+  "7625": { w: 4032, h: 3024, sizes: [480, 960, 1440, 1920], alt: "Főasztal bordó és narancs virágkompozíciója, oldalnézetből" },
   "8892": { w: 1600, h: 2400, sizes: [480, 960, 1440], alt: "Főasztal omló virágdísszel és púder színű terítővel" },
   "7833": { w: 3024, h: 4032, sizes: [480, 960, 1440], alt: "Omló menyasszonyi csokor sötét háttér előtt" },
   "6868": { w: 3024, h: 4032, sizes: [480, 960, 1440], alt: "Fehér textillel és virágdísszel díszített fa boldogságkapu" },

@@ -1,6 +1,8 @@
 import "@fontsource-variable/cinzel";
 import "@fontsource-variable/jost";
 import "./globals.css";
+import CookieConsent from "./CookieConsent";
+import OfferPopup from "./OfferPopup";
 
 export const metadata = {
   title: "Babszem Virágműhely",
@@ -15,7 +17,11 @@ export const viewport = { themeColor: "#faf6ef" };
 export default function RootLayout({ children }) {
   return (
     <html lang="hu">
-      <body>{children}</body>
+      <body>
+        {children}
+        <CookieConsent />
+        <OfferPopup />
+      </body>
     </html>
   );
 }

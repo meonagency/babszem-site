@@ -89,7 +89,20 @@ html:has(.home) { scroll-behavior: auto; }
 .home-nav { display: none; gap: clamp(20px, 2.4vw, 40px); font-family: var(--font-display); font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; }
 .home-nav a { color: var(--ink); transition: color 0.2s ease; }
 .home-nav a:hover { color: var(--gold-ink); }
-@media (min-width: 1000px) { .home-nav { display: flex; } }
+@media (min-width: 1100px) { .home-nav { display: flex; } }
+
+.head-cta { display: flex; align-items: center; gap: 10px; }
+.home .btn--soft { background: #efe6d6; color: var(--ink); }
+.home .btn--soft:hover { background: #e4d8c3; color: var(--ink); }
+@media (max-width: 599px) {
+  .home-head { gap: 10px; }
+  .head-cta { gap: 8px; }
+  .head-cta .btn { padding: 8px 12px; font-size: 13px; letter-spacing: 0.02em; }
+  .hide-sm { display: none; }
+  .logo-inline { font-size: 17px; gap: 8px; }
+  .home-head .logo-inline-mark { height: 30px; width: 21px; animation: none; }
+}
+@media (max-width: 359px) { .logo-inline > span { display: none; } }
 
 /* Nyitókép */
 .hero2 {
@@ -282,6 +295,8 @@ html:has(.home) { scroll-behavior: auto; }
 .home-foot .links .social { display: flex; gap: 28px; }
 .home-foot .links a { color: var(--ink); }
 .home-foot .links a:hover { color: var(--gold-ink); }
+.home .foot-link { background: none; border: 0; padding: 6px 0; font: inherit; cursor: pointer; color: var(--muted); text-decoration: underline; text-underline-offset: 4px; }
+.home .foot-link:hover { color: var(--gold-ink); }
 .home-foot .partner { justify-self: end; display: inline-flex; flex-direction: column; align-items: flex-end; gap: 10px; font-size: 13px; }
 .home-foot .partner a { color: var(--muted); }
 .home-foot .partner img { height: 20px; width: auto; opacity: 0.7; display: block; }
